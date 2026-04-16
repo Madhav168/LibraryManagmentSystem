@@ -81,8 +81,22 @@ export default function LoginPage() {
         <Card className="w-full max-w-sm border-none shadow-[0_32px_64px_-16px_rgba(25,23,22,0.1)] bg-white/90 backdrop-blur-xl rounded-[40px] overflow-hidden relative z-10">
           <CardContent className="p-8 lg:p-12">
             <div className="mb-8">
-              <h2 className="text-3xl font-black text-[#191716] uppercase tracking-tight mb-2">Login</h2>
-              <p className="text-[#191716]/50 font-medium text-xs">Enter your credentials to access the system.</p>
+              <h1 className="text-4xl font-black text-[#1d1d1b] tracking-tighter mb-2 uppercase">Login</h1>
+              <div className="flex flex-col gap-1 mb-8">
+                <p className="text-[#1d1d1b]/40 font-bold text-[10px] uppercase tracking-widest leading-none">
+                  Enter your credentials to access the system.
+                </p>
+                <div className="mt-4 flex gap-3">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black text-[#1d1d1b]/30 uppercase tracking-[0.2em] mb-1">Admin</span>
+                    <Badge variant="outline" className="h-7 px-3 border-[#e6af2e]/30 bg-[#e6af2e]/5 text-[#e6af2e] font-black text-[10px] lowercase rounded-lg">adm / adm</Badge>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black text-[#1d1d1b]/30 uppercase tracking-[0.2em] mb-1">User</span>
+                    <Badge variant="outline" className="h-7 px-3 border-[#1d1d1b]/10 bg-[#1d1d1b]/5 text-[#1d1d1b]/60 font-black text-[10px] lowercase rounded-lg">user / user</Badge>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {error && (
