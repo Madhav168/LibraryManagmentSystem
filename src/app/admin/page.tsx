@@ -2,80 +2,144 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import Link from 'next/link';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Library, LayoutDashboard, Database, FileText, ArrowRightLeft } from 'lucide-react';
 
 export default function AdminHomePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [categories, setCategories] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>({
+    totalAssets: '0',
+    activeUsers: '0',
+    dueToday: '0',
+    totalIssues: '0'
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/categories');
-        const data = await res.json();
-        if (res.ok) setCategories(data);
+        const [catRes, statsRes] = await Promise.all([
+          fetch('/api/categories'),
+          fetch('/api/admin/stats')
+        ]);
+        
+        const catData = await catRes.json();
+        const statsData = await statsRes.json();
+        
+        if (catRes.ok) setCategories(catData);
+        if (statsRes.ok) setStats(statsData);
       } catch (error) {
-        console.error('Failed to fetch categories:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCategories();
+    fetchData();
   }, []);
 
+  const statConfig = [
+    { name: 'Total Assets', value: stats.totalAssets, icon: Database },
+    { name: 'Active Users', value: stats.activeUsers, icon: LayoutDashboard },
+    { name: 'Due Today', value: stats.dueToday, icon: FileText },
+    { name: 'Total Issues', value: stats.totalIssues, icon: ArrowRightLeft },
+  ];
+
   return (
-    <div className="bg-white min-h-[500px] p-6 rounded-lg shadow-sm border border-gray-200">
-      {/* Top Navigation Links from Excel */}
-      <div className="flex justify-between mb-8 text-sm font-medium text-gray-600">
-        <span className="cursor-pointer hover:underline">Chart</span>
-        <h1 className="text-xl font-bold text-gray-900">Admin Home Page</h1>
-        <span className="cursor-pointer hover:underline">Back</span>
-      </div>
-
-      {/* Main Tab Links */}
-      <div className="flex space-x-12 mb-8 text-lg font-bold border-b pb-4">
-        <Link href="/admin/maintenance" className="hover:text-indigo-600 transition-colors">Maintenance</Link>
-        <Link href="/admin/reports" className="hover:text-indigo-600 transition-colors">Reports</Link>
-        <Link href="/admin/transactions" className="hover:text-indigo-600 transition-colors">Transactions</Link>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-center text-xl font-bold mb-4 uppercase">Product Details</h2>
-        <div className="max-w-2xl mx-auto overflow-hidden border-2 border-gray-800">
-          {loading ? (
-            <div className="p-12 text-center font-bold text-gray-500 animate-pulse">Loading Index...</div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-50 text-gray-800">
-                <tr className="divide-x divide-gray-800">
-                  <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Code No From</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Code No To</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Category</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-800 text-gray-900 font-bold">
-                {categories.map((item, idx) => (
-                  <tr key={idx} className="divide-x divide-gray-800 hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3 whitespace-nowrap text-sm">{item.codeFrom}</td>
-                    <td className="px-6 py-3 whitespace-nowrap text-sm">{item.codeTo}</td>
-                    <td className="px-6 py-3 whitespace-nowrap text-sm">{item.name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black text-[#191716] uppercase tracking-tight">Admin Home Page</h1>
+          <p className="text-[#191716]/60 font-medium">Welcome back, {user?.name}. Here is what's happening today.</p>
         </div>
+        <Badge variant="outline" className="w-fit py-1 px-4 border-[#e6af2e] text-[#e6af2e] font-black uppercase tracking-widest text-xs">
+          Live System Status
+        </Badge>
       </div>
 
-      <div className="mt-12 flex justify-end">
-        <button 
-          onClick={logout}
-          className="text-lg font-bold text-gray-800 hover:underline flex items-center"
-        >
-          Log Out
-        </button>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statConfig.map((stat, i) => (
+          <Card key={i} className="border-none shadow-xl bg-white/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-[#191716]/40 mb-1">{stat.name}</p>
+                  <p className="text-3xl font-black text-[#191716] leading-none">
+                    {loading ? "..." : stat.value}
+                  </p>
+                </div>
+                <div className="bg-[#e6af2e]/10 p-3 rounded-2xl group-hover:bg-[#e6af2e] transition-colors duration-300">
+                  <stat.icon className="h-6 w-6 text-[#191716]" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      {/* Product Details Table */}
+      <Card className="border-none shadow-2xl overflow-hidden bg-white p-0">
+        <CardHeader className="bg-[#191716] text-[#e0e2db] py-8 px-10 m-0 rounded-none">
+          <div className="flex items-center gap-4">
+            <div className="bg-[#e6af2e] p-2 rounded-lg">
+              <Library className="h-6 w-6 text-[#191716]" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-black uppercase tracking-tight">Product Details</CardTitle>
+              <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Asset classification and coding reference</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-10 space-y-4">
+              <div className="h-12 w-full bg-[#191716]/5 rounded animate-pulse" />
+              <div className="h-12 w-full bg-[#191716]/5 rounded animate-pulse" />
+              <div className="h-12 w-full bg-[#191716]/5 rounded animate-pulse" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-[#191716]/5">
+                <TableRow className="hover:bg-transparent border-b-[#191716]/10">
+                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 pl-10 h-14">Code No From</TableHead>
+                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 h-14">Code No To</TableHead>
+                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 h-14 pr-10 text-right">Category</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((item, idx) => (
+                  <TableRow key={idx} className="hover:bg-[#e6af2e]/5 transition-colors border-b-[#191716]/10 last:border-0 group">
+                    <TableCell className="font-bold text-[#191716]/80 pl-10 h-16">{item.codeFrom}</TableCell>
+                    <TableCell className="font-bold text-[#191716]/80 h-16">{item.codeTo}</TableCell>
+                    <TableCell className="h-16 pr-10 text-right">
+                      <Badge className="bg-[#191716] text-[#e6af2e] hover:bg-[#191716] px-4 py-1 rounded-full font-black text-[10px] uppercase">
+                        {item.name}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2,10 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import Link from 'next/link';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Library, BookOpenIcon, History, Search } from 'lucide-react';
 
 export default function UserHomePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,57 +41,88 @@ export default function UserHomePage() {
     fetchCategories();
   }, []);
 
+  const quickStats = [
+    { name: 'Books Issued', value: '3', icon: BookOpenIcon },
+    { name: 'Due Soon', value: '1', icon: History },
+    { name: 'Available Catalog', value: '150+', icon: Search },
+  ];
+
   return (
-    <div className="bg-white min-h-[500px] p-6 rounded-lg shadow-sm border border-gray-200 text-gray-900">
-      {/* Top Navigation Links from Excel */}
-      <div className="flex justify-between mb-8 text-sm font-medium text-gray-600">
-        <span className="cursor-pointer hover:underline">Chart</span>
-        <h1 className="text-xl font-bold text-gray-900">User Home Page</h1>
-        <span className="cursor-pointer hover:underline uppercase text-xs">Back</span>
-      </div>
-
-      {/* Main Tab Links - Notice NO Maintenance here */}
-      <div className="flex space-x-12 mb-8 text-lg font-bold border-b pb-4">
-        <Link href="/user/reports" className="hover:text-indigo-600 transition-colors">Reports</Link>
-        <Link href="/user/transactions" className="hover:text-indigo-600 transition-colors">Transactions</Link>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-center text-xl font-bold mb-4 uppercase">Product Details</h2>
-        <div className="max-w-2xl mx-auto overflow-hidden border-2 border-gray-800 text-gray-900 font-bold">
-          {loading ? (
-            <div className="p-12 text-center text-gray-500 animate-pulse">Loading Index...</div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-50 text-gray-800">
-                <tr className="divide-x divide-gray-800">
-                  <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Code No From</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Code No To</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Category</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-800">
-                {categories.map((item, idx) => (
-                  <tr key={idx} className="divide-x divide-gray-800 hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3 whitespace-nowrap text-sm">{item.codeFrom}</td>
-                    <td className="px-6 py-3 whitespace-nowrap text-sm">{item.codeTo}</td>
-                    <td className="px-6 py-3 whitespace-nowrap text-sm">{item.name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black text-[#191716] uppercase tracking-tight">User Dashboard</h1>
+          <p className="text-[#191716]/60 font-medium">Hello, {user?.name}. Browse the collection or manage your borrowings.</p>
         </div>
+        <Badge variant="outline" className="w-fit py-1 px-4 border-[#e6af2e] text-[#e6af2e] font-black uppercase tracking-widest text-xs">
+          Member Status: Active
+        </Badge>
       </div>
 
-      <div className="mt-12 flex justify-end">
-        <button 
-          onClick={logout}
-          className="text-lg font-bold text-gray-800 hover:underline"
-        >
-          Log Out
-        </button>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {quickStats.map((stat, i) => (
+          <Card key={i} className="border-none shadow-xl bg-white/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-[#191716]/40 mb-1">{stat.name}</p>
+                  <p className="text-3xl font-black text-[#191716] leading-none">{stat.value}</p>
+                </div>
+                <div className="bg-[#e6af2e]/10 p-3 rounded-2xl group-hover:bg-[#e6af2e] transition-colors duration-300">
+                  <stat.icon className="h-6 w-6 text-[#191716]" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      {/* Product Details Table */}
+      <Card className="border-none shadow-2xl overflow-hidden bg-white">
+        <CardHeader className="bg-[#191716] text-[#e0e2db] py-8 px-10">
+          <div className="flex items-center gap-4">
+            <div className="bg-[#e6af2e] p-2 rounded-lg">
+              <Library className="h-6 w-6 text-[#191716]" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-black uppercase tracking-tight">Browse Catalog Index</CardTitle>
+              <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Reference codes for different library categories</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-10 space-y-4">
+              <Skeleton className="h-12 w-full bg-[#191716]/5" />
+              <Skeleton className="h-12 w-full bg-[#191716]/5" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-[#191716]/5">
+                <TableRow className="hover:bg-transparent border-b-[#191716]/10">
+                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 pl-10 h-14">Serial Range Start</TableHead>
+                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 h-14">Serial Range End</TableHead>
+                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 h-14 pr-10 text-right">Genre / Category</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((item, idx) => (
+                  <TableRow key={idx} className="hover:bg-[#e6af2e]/5 transition-colors border-b-[#191716]/10 last:border-0">
+                    <TableCell className="font-bold text-[#191716]/80 pl-10 h-16">{item.codeFrom}</TableCell>
+                    <TableCell className="font-bold text-[#191716]/80 h-16">{item.codeTo}</TableCell>
+                    <TableCell className="h-16 pr-10 text-right">
+                      <Badge className="bg-[#e6af2e] text-[#191716] hover:bg-[#191716] px-4 py-1 rounded-full font-black text-[10px] uppercase">
+                        {item.name}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

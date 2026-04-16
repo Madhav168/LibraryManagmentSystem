@@ -1,87 +1,80 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
+import { Users, BookOpen, UserCog, ChevronRight } from 'lucide-react';
 
-export default function Housekeeping() {
-  const { logout } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
+export default function MaintenancePage() {
   const menuItems = [
-    { label: 'Membership', slug: 'membership' },
-    { label: 'Books/Movies', slug: 'assets' },
-    { label: 'User Management', slug: 'users' },
+    { 
+      label: 'Membership', 
+      description: 'Add or update library member profiles and subscriptions.',
+      slug: 'membership',
+      id: 'membership',
+      icon: Users,
+    },
+    { 
+      label: 'Books/Movies', 
+      description: 'Manage books, movies and digital resources in the catalog.',
+      slug: 'assets',
+      id: 'assets',
+      icon: BookOpen,
+    },
+    { 
+      label: 'User Management', 
+      description: 'Administrative control over staff and system access levels.',
+      slug: 'users',
+      id: 'users',
+      icon: UserCog,
+    },
   ];
 
   return (
-    <div className="max-w-3xl mx-auto py-12 px-6">
-      <div className="border-2 border-black bg-white p-4 min-h-[450px] relative">
-        
-        {/* Header Navigation */}
-        <div className="flex justify-between items-center mb-0 px-2 font-bold select-none text-sm">
-          <span className="hover:underline cursor-pointer">Chart</span>
-          <span className="text-xl px-24 invisible">Housekeeping</span>
-          <Link href="/admin" className="hover:underline">Home</Link>
-        </div>
+    <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-700">
+      <div>
+        <h1 className="text-4xl font-black text-[#191716] uppercase tracking-tight">Maintenance</h1>
+        <p className="text-[#191716]/60 font-medium">System maintenance and data management modules.</p>
+      </div>
 
-        {/* Header Label */}
-        <div className="text-center mb-10">
-          <h1 className="text-2xl font-black inline-block border-2 border-t-0 border-black px-16 py-2 uppercase">
-            Housekeeping
-          </h1>
-        </div>
-
-        {/* Selection Table */}
-        <div className="mt-8">
-          <table className="w-full border-collapse">
-            <tbody>
-              {menuItems.map((item) => (
-                <tr key={item.label} className="h-16">
-                  {/* Category Label */}
-                  <td className="w-1/2 p-2 align-top">
-                    <button 
-                      onClick={() => setSelectedCategory(selectedCategory === item.label ? null : item.label)}
-                      className={`text-xl font-bold hover:underline ${selectedCategory === item.label ? 'text-blue-700' : 'text-black'}`}
-                    >
-                      {item.label}
-                    </button>
-                  </td>
-                  
-                  {/* Selection Options (Only shown after click) */}
-                  <td className="w-1/2 p-2 align-top border-l border-black">
-                    {selectedCategory === item.label && (
-                      <div className="flex flex-col space-y-1 font-bold text-lg">
-                        <Link 
-                          href={`/admin/maintenance/${item.slug}?mode=add`}
-                          className="hover:underline text-black hover:text-blue-600"
-                        >
-                          Add
-                        </Link>
-                        <Link 
-                          href={`/admin/maintenance/${item.slug}?mode=update`}
-                          className="hover:underline text-black hover:text-blue-600"
-                        >
-                          Update
-                        </Link>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer Navigation */}
-        <div className="absolute bottom-4 right-4">
-          <button 
-            onClick={logout}
-            className="text-xl font-bold text-black border-b-2 border-black hover:text-blue-700"
-          >
-            Log Out
-          </button>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {menuItems.map((item, i) => (
+          <Card key={i} id={item.id} className="group border-none shadow-xl bg-white overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col scale-100 hover:scale-[1.02] scroll-mt-32 pt-0">
+            <div className="p-8 bg-[#191716] text-[#e0e2db]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="bg-[#e6af2e] p-3 rounded-2xl">
+                  <item.icon className="h-6 w-6 text-[#191716]" />
+                </div>
+                <div className="px-3 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-[#e6af2e]">
+                  0{i + 1}
+                </div>
+              </div>
+              <CardTitle className="text-2xl font-black uppercase tracking-tight group-hover:text-[#e6af2e] transition-colors">{item.label}</CardTitle>
+                <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Data Protocol</CardDescription>
+            </div>
+            <CardContent className="p-8 flex-1 flex flex-col justify-end space-y-4">
+              <Link 
+                href={`/admin/maintenance/${item.slug}?mode=add`}
+                className="flex items-center justify-between p-5 bg-[#e6af2e] text-[#191716] rounded-2xl hover:bg-white hover:text-black hover:border-black border border-transparent transition-all duration-300 font-black uppercase tracking-widest text-xs group/link shadow-lg shadow-[#e6af2e]/10"
+              >
+                <span>Add Record</span>
+                <ChevronRight className="h-5 w-5 opacity-40 group-hover/link:opacity-100 transition-opacity" />
+              </Link>
+              <Link 
+                href={`/admin/maintenance/${item.slug}?mode=update`}
+                className="flex items-center justify-between p-5 bg-[#191716] text-[#e0e2db] rounded-2xl hover:bg-[#191716]/90 transition-all duration-300 font-black uppercase tracking-widest text-xs group/link shadow-lg shadow-[#191716]/20"
+              >
+                <span>Update Existing</span>
+                <ChevronRight className="h-5 w-5 opacity-40 group-hover/link:opacity-100 transition-opacity" />
+              </Link>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

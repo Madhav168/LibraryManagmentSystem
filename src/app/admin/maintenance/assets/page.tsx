@@ -4,6 +4,28 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
+import { BookOpen, Save, XCircle } from 'lucide-react';
+import MaintenanceSidebar from '@/components/MaintenanceSidebar';
+import { CustomCombobox } from '@/components/Combobox';
 
 function AssetsForm() {
   const router = useRouter();
@@ -57,155 +79,156 @@ function AssetsForm() {
     }
   };
 
-  const buttonStyle = "px-8 py-2 bg-blue-600 text-white font-bold rounded shadow-[0_4px_0_rgb(30,58,138)] hover:brightness-110 active:translate-y-1 active:shadow-none transition-all uppercase";
-
   return (
-    <div className="max-w-6xl mx-auto py-4 px-2 font-sans text-sm">
-      <div className="border-2 border-black bg-white p-4">
-        
-        {/* Header Navigation */}
-        <div className="flex justify-between items-start mb-2 px-2">
-          <div className="flex flex-col">
-            <span className="font-bold underline cursor-pointer">Chart</span>
-          </div>
-          <Link href="/admin" className="font-bold underline">Home</Link>
-        </div>
-
-        <div className="grid grid-cols-12 gap-0 border-t-2 border-black pt-4">
-          
-          {/* Side Menu (Housekeeping) */}
-          <div className="col-span-2 border-r-2 border-black pr-4 min-h-[400px]">
-            <div className="flex flex-col space-y-4 font-bold text-sm">
-              <Link href="/admin/maintenance/membership?mode=add" className="hover:underline">Add</Link>
-              <Link href="/admin/maintenance/membership?mode=update" className="hover:underline">Update</Link>
-              <Link href="/admin/maintenance/assets?mode=add" className={`hover:underline ${mode === 'add' ? 'text-blue-600' : ''}`}>Add</Link>
-              <Link href="/admin/maintenance/assets?mode=update" className={`hover:underline ${mode === 'update' ? 'text-blue-600' : ''}`}>Update</Link>
-              <Link href="/admin/maintenance/users?mode=add" className="hover:underline">Add</Link>
-              <Link href="/admin/maintenance/users?mode=update" className="hover:underline">Update</Link>
+    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      <Card className="w-full border-none shadow-2xl bg-white overflow-hidden pt-0">
+        <div className="p-8 bg-[#191716] text-[#e0e2db]">
+          <div className="flex items-center gap-4">
+            <div className="bg-[#e6af2e] p-2 rounded-xl">
+              <BookOpen className="h-6 w-6 text-[#191716]" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-black uppercase tracking-tight">
+                {mode === 'add' ? 'Add Asset' : 'Update Asset'}
+              </CardTitle>
+              <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">
+                {mode === 'add' ? 'Add a new book or movie' : 'Modify asset details'}
+              </CardDescription>
             </div>
           </div>
+        </div>
+        
+        <CardContent className="p-10">
+          {message && (
+            <Badge variant="destructive" className="w-full py-2 mb-6 justify-center font-bold">
+              {message}
+            </Badge>
+          )}
 
-          {/* Form Content */}
-          <div className="col-span-10 pl-8">
-            <h1 className="text-center text-xl font-black mb-8 uppercase">
-              {mode === 'add' ? 'Add Book/Movie' : 'Update Book/Movie'}
-            </h1>
-            
-            {message && <div className="text-center font-bold text-red-600 mb-4">{message}</div>}
 
-            <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
-              {mode === 'add' ? (
-                <div className="grid grid-cols-2 items-center gap-4">
-                  <label className="font-bold italic">Radio Button - Book</label>
-                  <label className="font-bold italic flex items-center space-x-2">
-                    <input type="radio" name="type" checked={formData.type === 'Book'} onChange={() => setFormData({...formData, type: 'Book'})} />
-                    <span>Radio Button - Movie</span>
-                    <input type="radio" name="type" checked={formData.type === 'Movie'} onChange={() => setFormData({...formData, type: 'Movie'})} />
-                  </label>
-
-                  <label className="font-bold">Book/Movie Name</label>
-                  <input required className="border border-black p-1 bg-white" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-                  
-                  <label className="font-bold">Author</label>
-                  <input required className="border border-black p-1 bg-white" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} />
-                  
-                  <label className="font-bold">Serial No</label>
-                  <input required className="border border-black p-1 bg-white" value={formData.serialNo} onChange={e => setFormData({...formData, serialNo: e.target.value})} />
-                  
-                  <label className="font-bold">Status</label>
-                  <select className="border border-black p-1 bg-white font-bold" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                    <option>Available</option>
-                    <option>Unavailable</option>
-                    <option>Removed</option>
-                    <option>On Repair</option>
-                    <option>To Replace</option>
-                    <option>Lost</option>
-                    <option>Damaged</option>
-                  </select>
-                  
-                  <label className="font-bold">Date</label>
-                  <input type="date" required className="border border-black p-1 bg-white font-bold" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="p-6 bg-[#f0f2ef] rounded-2xl space-y-4">
+              <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Asset Category</Label>
+              <RadioGroup 
+                value={formData.type} 
+                onValueChange={(val) => setFormData({...formData, type: val as any})}
+                className="flex gap-10"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Book" id="book" className="h-6 w-6 border-2 border-[#191716]/20 text-[#e6af2e]" />
+                  <Label htmlFor="book" className="text-lg font-black tracking-tight cursor-pointer">Book</Label>
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 items-center gap-4">
-                   <label className="font-bold italic">Radio Button - Book</label>
-                  <label className="font-bold italic flex items-center space-x-2">
-                    <input type="radio" name="type" checked={formData.type === 'Book'} onChange={() => setFormData({...formData, type: 'Book'})} />
-                    <span>Radio Button - Movie</span>
-                    <input type="radio" name="type" checked={formData.type === 'Movie'} onChange={() => setFormData({...formData, type: 'Movie'})} />
-                  </label>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Movie" id="movie" className="h-6 w-6 border-2 border-[#191716]/20 text-[#e6af2e]" />
+                  <Label htmlFor="movie" className="text-lg font-black tracking-tight cursor-pointer">Movie</Label>
+                </div>
+              </RadioGroup>
+            </div>
 
-                  <label className="font-bold">Book/Movie Name</label>
-                  <div className="relative">
-                    <input 
-                      list="asset-list"
-                      required 
-                      className="w-full border border-black p-1 bg-white font-bold" 
-                      value={formData.title}
-                      onChange={e => {
-                        const val = e.target.value;
-                        const match = assets.find(a => a.title === val);
-                        if (match) {
-                          setFormData({
-                            ...formData,
-                            title: val,
-                            author: match.author,
-                            serialNo: match.serialNo,
-                            status: match.status || 'Available',
-                            type: match.type || 'Book',
-                            date: new Date(match.date || Date.now()).toISOString().split('T')[0]
-                          });
-                        } else {
-                          setFormData({...formData, title: val});
-                        }
-                      }} 
-                    />
-                    <datalist id="asset-list">
-                      {assets.map(a => <option key={a._id} value={a.title}>{a.author}</option>)}
-                    </datalist>
-                  </div>
-
-                  <label className="font-bold">Serial No</label>
-                  <input readOnly className="border border-black p-1 bg-gray-200 cursor-not-allowed" value={formData.serialNo || 'Search Name...'} />
-                  
-                  <label className="font-bold">Status</label>
-                  <select className="border border-black p-1 bg-white font-bold" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                    <option>Available</option>
-                    <option>Unavailable</option>
-                    <option>Removed</option>
-                    <option>On Repair</option>
-                    <option>To Replace</option>
-                    <option>Lost</option>
-                    <option>Damaged</option>
-                  </select>
-                  
-                  <label className="font-bold">Date</label>
-                  <input type="date" required className="border border-black p-1 bg-white font-bold" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {mode === 'update' && (
+                <div className="md:col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Locate Asset in Catalog</Label>
+                  <CustomCombobox
+                    items={assets.map(a => ({
+                      value: a.title,
+                      label: a.title,
+                      subLabel: a.author
+                    }))}
+                    value={formData.title}
+                    placeholder="Search by title..."
+                    onSelect={(val) => {
+                      const match = assets.find(a => a.title === val);
+                      if (match) {
+                        setFormData({
+                          ...formData,
+                          title: val,
+                          author: match.author,
+                          serialNo: match.serialNo,
+                          status: match.status || 'Available',
+                          type: match.type || 'Book',
+                          date: new Date(match.date || Date.now()).toISOString().split('T')[0]
+                        });
+                      }
+                    }}
+                  />
                 </div>
               )}
 
-              <div className="flex justify-center space-x-12 mt-12 pb-8">
-                <Link href="/status/cancelled" className={buttonStyle}>Cancel</Link>
-                <button type="submit" className={buttonStyle}>
-                  {mode === 'add' ? 'Confirm' : 'Update'}
-                </button>
+              <div className="md:col-span-2 space-y-2">
+                <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Resource Title</Label>
+                <Input required className="bg-[#e0e2db]/20 border border-[#191716]/10 h-14 font-bold text-lg focus-visible:ring-[#e6af2e]" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Inception" />
               </div>
-            </form>
-          </div>
-        </div>
+              <div className="space-y-2">
+                <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Primary Creator (Author/Director)</Label>
+                <Input required className="bg-[#e0e2db]/20 border border-[#191716]/10 h-12 font-bold focus-visible:ring-[#e6af2e]" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Catalog Serial Number (UID)</Label>
+                <Input 
+                  required 
+                  disabled={mode === 'update'}
+                  className="bg-[#e0e2db]/20 border border-[#191716]/10 h-12 font-bold focus-visible:ring-[#e6af2e] disabled:opacity-50" 
+                  value={formData.serialNo} 
+                  onChange={e => setFormData({...formData, serialNo: e.target.value})} 
+                  placeholder="SN-000000" 
+                />
+              </div>
 
-        {/* Footer */}
-        <div className="flex justify-end mt-4">
-          <button onClick={logout} className="font-black text-black hover:underline uppercase text-sm border-b-2 border-black">Log Out</button>
-        </div>
-      </div>
+              <div className="space-y-2">
+                <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Current Status</Label>
+                <Select value={formData.status} onValueChange={(val) => setFormData({...formData, status: val || 'Available'})}>
+                  <SelectTrigger className="bg-[#e0e2db]/20 border-none h-12 font-bold focus:ring-[#e6af2e]">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-[#191716]/10 font-bold">
+                    <SelectItem value="Available">Available</SelectItem>
+                    <SelectItem value="Unavailable">Unavailable</SelectItem>
+                    <SelectItem value="Removed">Removed</SelectItem>
+                    <SelectItem value="On Repair">On Repair</SelectItem>
+                    <SelectItem value="To Replace">To Replace</SelectItem>
+                    <SelectItem value="Lost">Lost</SelectItem>
+                    <SelectItem value="Damaged">Damaged</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Reference Date</Label>
+                <Input type="date" required className="bg-[#e0e2db]/20 border-none h-12 font-bold" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-8 border-t border-[#191716]/5">
+              <Button 
+                type="submit" 
+                className="flex-1 h-16 bg-[#191716] text-[#e6af2e] hover:bg-[#e6af2e] hover:text-[#191716] transition-all duration-300 font-black uppercase tracking-widest shadow-2xl"
+              >
+                <Save className="mr-2 h-6 w-6" />
+                {mode === 'add' ? 'Add' : 'Update'}
+              </Button>
+              <Button 
+                asChild 
+                variant="outline" 
+                className="h-16 px-10 border-2 border-[#191716]/10 hover:bg-black hover:text-white transition-all duration-300 font-bold uppercase tracking-widest"
+              >
+                <Link href="/status/cancelled">
+                  <XCircle className="mr-2 h-6 w-6" />
+                  Cancel
+                </Link>
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
 export default function AssetsMaintenance() {
   return (
-    <Suspense fallback={<div className="p-8 text-center font-bold">Loading...</div>}>
+    <Suspense fallback={<div className="flex h-96 items-center justify-center font-black uppercase tracking-widest text-xs animate-pulse">Synchronizing Catalog...</div>}>
       <AssetsForm />
     </Suspense>
   );

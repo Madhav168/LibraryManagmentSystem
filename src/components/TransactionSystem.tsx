@@ -1,12 +1,54 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, BookOpen, ArrowRight, ArrowLeft, History, DollarSign, Home as HomeIcon, LogOut, LayoutGrid } from 'lucide-react';
+import { 
+  Search, 
+  BookOpen, 
+  ArrowRight, 
+  ArrowLeft, 
+  History, 
+  DollarSign, 
+  ChevronRight,
+  Info,
+  Library,
+  ArrowRightLeft,
+  CheckCircle2,
+  AlertCircle,
+  Home
+} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { CustomCombobox } from '@/components/Combobox';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-type Tab = 'menu' | 'search' | 'issue' | 'return' | 'pay';
+type Tab = 'menu' | 'search' | 'results' | 'issue' | 'return' | 'pay';
 
 export default function TransactionSystem() {
   const { user, logout } = useAuth();
@@ -66,14 +108,13 @@ export default function TransactionSystem() {
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!searchQuery && !searchAuthor) {
-      alert('Please enter either a Book Name or an Author to search.');
-      return;
-    }
-
     setIsLoading(true);
+    setCurrentPage(1); 
     const params = new URLSearchParams();
     if (searchQuery) params.append('title', searchQuery);
     if (searchAuthor) params.append('author', searchAuthor);
@@ -83,6 +124,11 @@ export default function TransactionSystem() {
     setSearchResults(data);
     setIsLoading(false);
   };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
 
   const handleIssue = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,10 +147,6 @@ export default function TransactionSystem() {
 
     if (res.ok) {
       router.push('/status/success?type=transaction');
-      setActiveTab('menu');
-      setSelectedAsset(null);
-      setSelectedMember('');
-      fetchActiveTransactions();
     } else {
       const data = await res.json();
       alert(data.error || 'Issue failed');
@@ -116,7 +158,6 @@ export default function TransactionSystem() {
     e.preventDefault();
     if (!selectedTransaction) return;
 
-    // Calculate fine on the fly for validation
     const daysOverdue = Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction.dueDate).getTime()) / (1000 * 60 * 60 * 24)));
     const currentFine = daysOverdue * 10;
 
@@ -137,562 +178,357 @@ export default function TransactionSystem() {
 
     if (res.ok) {
       router.push('/status/success?type=transaction');
-      setActiveTab('menu');
-      setSelectedTransaction(null);
-      setFinePaid(false);
-      fetchActiveTransactions();
     }
     setIsLoading(false);
   };
 
+  const MenuButton = ({ title, desc, icon: Icon, onClick, variant = 'dark' }: any) => (
+    <button 
+      onClick={onClick}
+      className={`w-full text-left group flex items-center justify-between p-8 rounded-[32px] transition-all duration-500 border-2 ${
+        variant === 'gold' 
+          ? 'bg-[#e6af2e] border-[#e6af2e] text-[#191716] shadow-xl shadow-[#e6af2e]/20 hover:-translate-y-1' 
+          : 'bg-[#191716] border-[#191716] text-[#e0e2db] shadow-2xl hover:-translate-y-1'
+      }`}
+    >
+      <div className="flex items-center gap-6">
+        <div className={`p-4 rounded-2xl ${variant === 'gold' ? 'bg-[#191716] text-[#e6af2e]' : 'bg-[#e6af2e] text-[#191716]'}`}>
+          <Icon className="h-6 w-6" />
+        </div>
+        <div>
+          <h3 className="text-xl font-black uppercase tracking-tight">{title}</h3>
+          <p className={`text-xs font-bold uppercase tracking-widest ${variant === 'gold' ? 'text-[#191716]/60' : 'text-[#e0e2db]/60'}`}>
+            {desc}
+          </p>
+        </div>
+      </div>
+      <ChevronRight className={`h-6 w-6 transition-transform duration-300 group-hover:translate-x-2 ${variant === 'gold' ? 'text-[#191716]' : 'text-[#e6af2e]'}`} />
+    </button>
+  );
+
   return (
-    <div className="bg-white min-h-[500px] p-6 rounded-lg shadow-sm border border-gray-200">
-      {/* Top Navigation Links from Excel */}
-      <div className="flex justify-between mb-8 text-sm font-medium text-gray-600">
-        <span className="cursor-pointer hover:underline">Chart</span>
-        <h1 className="text-xl font-bold text-gray-900 border-b pb-1">Transactions</h1>
-        <Link href={user?.role === 'Admin' ? '/admin' : '/user'} className="hover:underline">Home</Link>
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <ArrowRightLeft className="h-4 w-4 text-[#e6af2e]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#191716]/40">System Core</span>
+          </div>
+          <h1 className="text-5xl font-black text-[#191716] uppercase tracking-tighter">
+            Transactions
+          </h1>
+        </div>
+        <Button 
+          asChild
+          variant="ghost"
+          className="font-black uppercase tracking-widest text-[#191716] hover:bg-[#e6af2e]/10 px-6 h-14 rounded-2xl border-2 border-[#191716]/5 transition-all"
+        >
+          <Link href={user?.role === 'Admin' ? '/admin' : '/user'}>
+            <Home className="mr-2 h-4 w-4" />
+            Return to Dashboard
+          </Link>
+        </Button>
       </div>
 
-      {activeTab === 'menu' && (
-        <div className="max-w-md mx-auto mt-12 border-2 border-gray-800 p-8 rounded-lg">
-          <ul className="space-y-6 text-xl font-bold text-gray-800">
-            <li>
-              <button 
-                onClick={() => {
-                  setSearchResults([]);
-                  setSearchQuery('');
-                  setSearchAuthor('');
-                  setActiveTab('search');
-                }} 
-                className="hover:text-indigo-600 hover:underline"
-              >
-                Is book available?
-              </button>
-            </li>
-            <li>
-              <button 
-                onClick={() => {
-                  setSelectedAsset(null);
-                  setSelectedMember('');
-                  setActiveTab('issue');
-                }} 
-                className="hover:text-indigo-600 hover:underline"
-              >
-                Issue book?
-              </button>
-            </li>
-            <li>
-              <button 
-                onClick={() => {
-                  setSelectedTransaction(null);
-                  setActiveTab('return');
-                }} 
-                className="hover:text-indigo-600 hover:underline"
-              >
-                Return book?
-              </button>
-            </li>
-            <li className="flex justify-end pt-4">
-              <button onClick={logout} className="text-gray-900 border-2 border-black px-4 py-1 hover:bg-gray-100 uppercase text-sm">Log Out</button>
-            </li>
-          </ul>
-        </div>
-      )}
-
-      {activeTab !== 'menu' && (
-        <button 
-          onClick={resetState}
-          className="mb-6 flex items-center text-sm text-indigo-600 font-medium hover:underline"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Transaction Menu
-        </button>
-      )}
-
-      {activeTab === 'search' && searchResults.length === 0 && (
-        <div className="max-w-xl mx-auto space-y-8 border-2 border-gray-800 p-8 rounded-lg animate-in fade-in bg-white shadow-xl">
-          <h2 className="text-xl font-bold border-b-2 border-black pb-2">
-            Book Availability Search
-          </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Sidebar Menu */}
+        <div className="lg:col-span-3 space-y-4">
+          {[
+            { id: 'search', label: 'Is book available?', icon: Search },
+            { id: 'issue', label: 'Issue book?', icon: ArrowRight },
+            { id: 'return', label: 'Return book?', icon: ArrowLeft },
+            { id: 'pay', label: 'Pay Fine?', icon: DollarSign },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => { resetState(); setActiveTab(item.id as Tab); }}
+              className={`w-full text-left p-6 rounded-2xl flex items-center justify-between transition-all duration-300 border-2 ${
+                activeTab === item.id || (activeTab === 'results' && item.id === 'search')
+                  ? 'bg-[#191716] border-[#191716] text-[#e6af2e] shadow-xl translate-x-2' 
+                  : 'bg-white border-[#191716]/5 text-[#191716] hover:bg-[#e6af2e]/5'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <item.icon className={`h-5 w-5 ${activeTab === item.id || (activeTab === 'results' && item.id === 'search') ? 'text-[#e6af2e]' : 'text-[#191716]/40'}`} />
+                <span className="font-black uppercase tracking-tight text-sm">{item.label}</span>
+              </div>
+              <ChevronRight className={`h-4 w-4 transition-transform ${activeTab === item.id || (activeTab === 'results' && item.id === 'search') ? 'opacity-100 rotate-90' : 'opacity-20'}`} />
+            </button>
+          ))}
           
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Enter Book Name</label>
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  list="book-titles"
-                  className="w-full border-2 border-gray-800 p-2 font-bold"
-                  placeholder="Drop Down"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <datalist id="book-titles">
-                  {suggestions.titles.map((title, i) => (
-                    <option key={i} value={title} />
-                  ))}
-                </datalist>
-              </div>
+          <div className="mt-10 p-6 bg-[#191716]/5 rounded-3xl space-y-4 border-2 border-dashed border-[#191716]/10">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#191716]/40">System Status</p>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-widest">Active Session</span>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Enter Author</label>
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  list="author-names"
-                  className="w-full border-2 border-gray-800 p-2 font-bold"
-                  placeholder="Drop Down"
-                  value={searchAuthor}
-                  onChange={(e) => setSearchAuthor(e.target.value)}
-                />
-                <datalist id="author-names">
-                  {suggestions.authors.map((author, i) => (
-                    <option key={i} value={author} />
-                  ))}
-                </datalist>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8 pt-8">
-            <button 
-              onClick={resetState}
-              className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all"
-            >
-              Cancel
-            </button>
-            <button 
-              onClick={handleSearch}
-              disabled={isLoading}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all"
-            >
-              {isLoading ? 'Searching...' : 'Search'}
-            </button>
           </div>
         </div>
-      )}
 
-      {activeTab === 'search' && searchResults.length > 0 && (
-        <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow border-2 border-gray-800 animate-in fade-in duration-500">
-          
-          {/* Main Transaction Header (Excel Style) */}
-          <div className="flex justify-between items-center mb-0 relative">
-            <div className="flex-1 text-center">
-              <h1 className="text-xl font-bold uppercase underline">Transactions</h1>
+        {/* Right Content Area */}
+        <div className="lg:col-span-9">
+          {activeTab === 'menu' ? (
+            <div className="h-full flex flex-col items-center justify-center p-20 bg-white rounded-[32px] border-2 border-[#191716]/5 border-dashed space-y-6">
+              <div className="bg-[#e6af2e] p-8 rounded-[40px] shadow-2xl shadow-[#e6af2e]/20">
+                <Library className="h-16 w-16 text-[#191716]" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-3xl font-black text-[#191716] mb-2 uppercase tracking-tighter">Ready for Action</h3>
+                <p className="text-[#191716]/40 font-bold uppercase tracking-widest text-xs">Select a transaction operation from the left to begin</p>
+              </div>
             </div>
-            <Link href={user?.role === 'Admin' ? '/admin' : '/user'} className="font-bold underline text-sm absolute right-0">Home</Link>
-          </div>
-
-          <div className="mt-8 border-2 border-black p-0 bg-white min-h-[400px] flex flex-col">
-            <h2 className="text-md font-bold bg-gray-50 border-b-2 border-black p-2">Book Availability</h2>
-            
-            <div className="flex-1 overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b-2 border-black text-left text-xs bg-gray-50 uppercase font-bold">
-                    <th className="p-3 border-r-2 border-black">Book Name</th>
-                    <th className="p-3 border-r-2 border-black">Author Name</th>
-                    <th className="p-3 border-r-2 border-black">Serial Number</th>
-                    <th className="p-3 border-r-2 border-black">Available</th>
-                    <th className="p-3">Select to issue the book</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y-2 divide-gray-200">
-                  {searchResults.map((asset) => (
-                    <tr key={asset._id} className="text-sm font-medium hover:bg-gray-50">
-                      <td className="p-3 border-r-2 border-black">{asset.title}</td>
-                      <td className="p-3 border-r-2 border-black">{asset.author}</td>
-                      <td className="p-3 border-r-2 border-black font-mono">{asset.serialNo}</td>
-                      <td className="p-3 border-r-2 border-black text-center font-bold">
-                        {asset.availableCopies > 0 ? 'Y' : 'N'}
-                      </td>
-                      <td className="p-3 text-center">
-                        {asset.availableCopies > 0 && (
-                          <input 
-                            type="radio" 
-                            name="asset-select"
-                            className="w-5 h-5 cursor-pointer accent-blue-600"
-                            onClick={() => {
-                              setSelectedAsset(asset);
-                              setActiveTab('issue');
-                            }}
-                          />
+          ) : activeTab === 'search' ? (
+            <Card className="border-none shadow-2xl overflow-hidden bg-white pt-0">
+               <div className="bg-[#191716] text-[#e0e2db] p-10">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-[#e6af2e] p-3 rounded-xl">
+                      <Search className="h-6 w-6 text-[#191716]" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl font-black uppercase tracking-tight">Book Availability</CardTitle>
+                      <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Enter search details below</CardDescription>
+                    </div>
+                  </div>
+              </div>
+              <CardContent className="p-10 space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Book Name</Label>
+                    <CustomCombobox
+                      items={suggestions.titles.map(t => ({ value: t, label: t }))}
+                      value={searchQuery}
+                      placeholder="Drop Down"
+                      onSelect={(val) => setSearchQuery(val)}
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Author</Label>
+                    <CustomCombobox
+                      items={suggestions.authors.map(a => ({ value: a, label: a }))}
+                      value={searchAuthor}
+                      placeholder="Drop Down"
+                      onSelect={(val) => setSearchAuthor(val)}
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-4 pt-10">
+                  <Button 
+                    onClick={async () => {
+                      await handleSearch();
+                      setActiveTab('results');
+                    }}
+                    disabled={isLoading}
+                    className="flex-1 h-16 bg-[#191716] text-[#e6af2e] hover:bg-[#e6af2e] hover:text-[#191716] rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl"
+                  >
+                    {isLoading ? 'Searching...' : 'Search'}
+                  </Button>
+                  <Button 
+                    onClick={() => { resetState(); setActiveTab('menu'); }}
+                    variant="outline"
+                    className="flex-1 h-16 px-10 border-2 border-[#191716]/10 rounded-2xl font-bold uppercase tracking-widest"
+                  >
+                    Back
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : activeTab === 'results' ? (
+            <Card className="border-none shadow-2xl overflow-hidden bg-white pt-0">
+               <div className="bg-[#191716] text-[#e0e2db] p-10">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-[#e6af2e] p-3 rounded-xl">
+                      <Search className="h-6 w-6 text-[#191716]" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl font-black uppercase tracking-tight">Search Results</CardTitle>
+                      <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Asset availability overview</CardDescription>
+                    </div>
+                  </div>
+              </div>
+              <CardContent className="p-0">
+                 {isLoading ? (
+                   <div className="p-32 flex flex-col items-center justify-center gap-6">
+                      <div className="w-16 h-16 border-4 border-[#e6af2e] border-t-transparent rounded-full animate-spin"></div>
+                      <p className="font-black uppercase tracking-widest text-xs text-[#191716]/40">Gathering Intelligence...</p>
+                   </div>
+                 ) : (
+                   <>
+                    <Table>
+                      <TableHeader className="bg-[#191716]/5">
+                        <TableRow className="border-b-[#191716]/10">
+                          <TableHead className="font-black uppercase tracking-widest text-[10px] pl-10 h-16">Book Name</TableHead>
+                          <TableHead className="font-black uppercase tracking-widest text-[10px] h-16">Author Name</TableHead>
+                          <TableHead className="font-black uppercase tracking-widest text-[10px] h-16">Serial Number</TableHead>
+                          <TableHead className="font-black uppercase tracking-widest text-[10px] h-16 text-center">Available</TableHead>
+                          <TableHead className="font-black uppercase tracking-widest text-[10px] h-16 text-right pr-10 whitespace-nowrap">Select to issue the book</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {searchResults.length === 0 ? (
+                           <TableRow>
+                             <TableCell colSpan={5} className="h-40 text-center opacity-20 font-black uppercase tracking-widest text-xs">No records found</TableCell>
+                           </TableRow>
+                        ) : (
+                          currentItems.map((asset) => (
+                            <TableRow key={asset._id} className="hover:bg-[#e6af2e]/5 border-b-[#191716]/5">
+                              <TableCell className="pl-10 h-20 font-black text-[#191716] uppercase tracking-tight">{asset.title}</TableCell>
+                              <TableCell className="font-bold text-[#191716]/60 uppercase text-xs">{asset.author}</TableCell>
+                              <TableCell className="font-mono text-[10px] font-bold text-[#191716]/40 uppercase tracking-widest">{asset.serialNo}</TableCell>
+                              <TableCell className="text-center font-black text-sm">
+                                 {asset.availableCopies > 0 ? <span className="text-green-600">Y</span> : <span className="text-red-600">N</span>}
+                              </TableCell>
+                              <TableCell className="text-right pr-10">
+                                 {asset.availableCopies > 0 ? (
+                                   <button 
+                                     onClick={() => { setSelectedAsset(asset); setActiveTab('issue'); }}
+                                     className="group/btn relative"
+                                   >
+                                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#191716]/40 group-hover/btn:text-[#191716] transition-colors">
+                                        <div className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center p-0.5">
+                                          <div className="w-full h-full rounded-full bg-transparent group-hover/btn:bg-[#e6af2e]" />
+                                        </div>
+                                        radio button
+                                      </div>
+                                   </button>
+                                 ) : (
+                                   <span className="text-[10px] font-black uppercase text-[#191716]/20">Unavailable</span>
+                                 )}
+                              </TableCell>
+                            </TableRow>
+                          ))
                         )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="p-6 flex justify-between items-end">
-              <div className="space-x-4 flex">
-                <button 
-                  onClick={() => setSearchResults([])}
-                  className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-10 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all uppercase"
-                >
-                  Search
-                </button>
-                <button 
-                  onClick={resetState}
-                  className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-10 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all uppercase"
-                >
-                  Cancel
-                </button>
+                      </TableBody>
+                    </Table>
+                    <div className="p-8 border-t border-[#191716]/5 flex items-center justify-between">
+                       <Button variant="outline" onClick={() => setActiveTab('search')} className="rounded-xl font-black uppercase tracking-widest text-[10px] h-10 px-6">Back</Button>
+                       <div className="flex gap-2">
+                         <Button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} variant="outline" size="sm" className="rounded-xl">Prev</Button>
+                         <Button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} variant="outline" size="sm" className="rounded-xl">Next</Button>
+                       </div>
+                    </div>
+                   </>
+                 )}
+              </CardContent>
+            </Card>
+          ) : activeTab === 'issue' ? (
+            <Card className="border-none shadow-2xl overflow-hidden bg-white pt-0">
+               <div className="bg-[#e6af2e] text-[#191716] p-10">
+                <div className="flex items-center gap-4">
+                  <div className="bg-[#191716] p-3 rounded-xl">
+                    <ArrowRight className="h-6 w-6 text-[#e6af2e]" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Book Issue</CardTitle>
+                    <CardDescription className="text-[#191716]/60 font-bold uppercase tracking-widest text-[10px]">Processing resource allocation</CardDescription>
+                  </div>
+                </div>
               </div>
-              <button onClick={logout} className="font-bold underline text-sm mb-2">Log Out</button>
-            </div>
-          </div>
+              <CardContent className="p-10">
+                <form onSubmit={handleIssue} className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px]">Recipient</Label>
+                      <CustomCombobox
+                        items={members.map(m => ({ value: m._id, label: `${m.firstName} ${m.lastName}`, subLabel: m.aadhar }))}
+                        value={selectedMember}
+                        placeholder="Select Member..."
+                        onSelect={(val) => setSelectedMember(val)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px]">Asset</Label>
+                      <Input 
+                        className="h-12 border-2 rounded-xl px-4 font-bold"
+                        value={selectedAsset?.title || ''}
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <Button type="submit" className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl">Confirm Issue</Button>
+                    <Button type="button" onClick={() => setActiveTab('search')} variant="outline" className="h-16 px-10 rounded-2xl font-black uppercase tracking-widest">Back</Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          ) : activeTab === 'return' ? (
+            <Card className="border-none shadow-2xl overflow-hidden bg-white pt-0">
+               <div className="bg-[#191716] text-[#e0e2db] p-10">
+                <div className="flex items-center gap-4">
+                  <div className="bg-[#e6af2e] p-3 rounded-xl">
+                    <ArrowLeft className="h-6 w-6 text-[#191716]" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Return Book</CardTitle>
+                    <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Reclamation protocols</CardDescription>
+                  </div>
+                </div>
+              </div>
+              <CardContent className="p-10">
+                <div className="space-y-10">
+                   <div className="space-y-4">
+                    <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 ml-1">Asset Serial Number</Label>
+                    <CustomCombobox
+                      items={activeTransactions.map(t => ({
+                        value: t.assetId?._id || t._id,
+                        label: `${t.assetId?.serialNo} - ${t.assetId?.title}`,
+                        subLabel: t.memberId?.firstName
+                      }))}
+                      value={selectedTransaction?.assetId?._id || ''}
+                      placeholder="SELECT SN..."
+                      onSelect={(val) => {
+                        const tx = activeTransactions.find(t => (t.assetId?._id || t._id) === val);
+                        if (tx) setSelectedTransaction(tx);
+                      }}
+                    />
+                  </div>
+                  {selectedTransaction && (
+                    <div className="space-y-8 animate-in slide-in-from-top-6">
+                       <div className="flex items-center gap-4 p-8 bg-[#e6af2e]/5 rounded-3xl border-2 border-dashed border-[#e6af2e]/30">
+                        <Checkbox 
+                          id="fine-paid-side" 
+                          checked={finePaid} 
+                          onCheckedChange={(val) => setFinePaid(val as boolean)}
+                          className="h-8 w-8 rounded-xl border-2 border-[#e6af2e] data-[state=checked]:bg-[#e6af2e] data-[state=checked]:text-[#191716]"
+                        />
+                        <div className="flex-1">
+                          <Label htmlFor="fine-paid-side" className="text-lg font-black uppercase tracking-tight text-[#191716] block mb-1">Financial Settlement</Label>
+                          <p className="text-xs font-bold text-[#191716]/50">Verify all dues are cleared</p>
+                        </div>
+                      </div>
+                      <Button onClick={handleReturn} className="w-full h-16 bg-[#191716] text-[#e6af2e] rounded-2xl font-black uppercase tracking-widest">Confirm Return</Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : activeTab === 'pay' ? (
+            <Card className="border-none shadow-2xl overflow-hidden bg-white pt-0">
+               <div className="bg-[#e6af2e] text-[#191716] p-10">
+                <div className="flex items-center gap-4">
+                  <div className="bg-[#191716] p-3 rounded-xl">
+                    <DollarSign className="h-6 w-6 text-[#e6af2e]" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Financial Dues</CardTitle>
+                    <CardDescription className="text-[#191716]/60 font-bold uppercase tracking-widest text-[10px]">Processing late fees</CardDescription>
+                  </div>
+                </div>
+              </div>
+              <CardContent className="p-10 text-center space-y-6">
+                 <div className="bg-[#191716]/5 p-20 rounded-[32px] border-2 border-dashed border-[#191716]/10">
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-[#191716]/30 mb-4">Module Integration</p>
+                    <h4 className="text-xl font-black text-[#191716] uppercase mb-4">Payment Integrated with Return</h4>
+                    <p className="max-w-md mx-auto text-xs font-bold leading-relaxed text-[#191716]/60">For the most efficient workflow, fine payments are now processed directly within the Book Return sequence.</p>
+                    <Button onClick={() => setActiveTab('return')} className="mt-8 bg-[#191716] text-[#e6af2e] px-10 h-14 rounded-2xl font-black uppercase tracking-widest">Go to Return</Button>
+                 </div>
+              </CardContent>
+            </Card>
+          ) : null}
         </div>
-      )}
-
-      {activeTab === 'issue' && (
-        <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border-2 border-gray-800 animate-in slide-in-from-bottom-4 duration-300">
-          <h2 className="text-xl font-bold mb-6 text-center border-b pb-2">
-            Book Issue
-          </h2>
-          <form onSubmit={handleIssue} className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Membership ID</label>
-              <div className="flex-1 relative">
-                <select 
-                  required
-                  className="w-full border-2 border-gray-800 p-2 font-bold"
-                  value={selectedMember}
-                  onChange={(e) => setSelectedMember(e.target.value)}
-                >
-                  <option value="">Select Member</option>
-                  {members.map((m) => (
-                    <option key={m._id} value={m._id}>
-                      {m.firstName} {m.lastName} ({m.membershipId || m.aadhar})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Enter Book Name</label>
-              <div className="flex-1 relative">
-                <input 
-                  type="text" 
-                  list="issue-book-titles"
-                  placeholder="Drop Down"
-                  className="w-full border-2 border-gray-800 p-2 font-bold" 
-                  value={selectedAsset?.title || ''} 
-                  onChange={async (e) => {
-                    const title = e.target.value;
-                    // If manually typing or selecting, try to find the asset info
-                    const res = await fetch(`/api/transactions/search?title=${encodeURIComponent(title)}`);
-                    if (res.ok) {
-                      const matches = await res.json();
-                      if (matches.length > 0) {
-                        setSelectedAsset(matches[0]);
-                      } else {
-                        setSelectedAsset({ title }); // Keep title but clear others if no match
-                      }
-                    }
-                  }}
-                />
-                <datalist id="issue-book-titles">
-                  {suggestions.titles.map((title, i) => (
-                    <option key={i} value={title} />
-                  ))}
-                </datalist>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Enter Author</label>
-              <div className="flex-1">
-                <input 
-                  type="text" 
-                  readOnly 
-                  placeholder="Text box"
-                  className="w-full bg-gray-100 border-2 border-gray-800 p-2 text-gray-600 cursor-not-allowed" 
-                  value={selectedAsset?.author || ''} 
-                />
-                <p className="text-[10px] text-gray-500 mt-1 italic">Automatically populated and is non-editable.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Issue Date</label>
-              <input 
-                id="issue-date"
-                type="date" 
-                required 
-                className="flex-1 border-2 border-gray-800 p-2" 
-                defaultValue={new Date().toISOString().split('T')[0]} 
-                onChange={(e) => {
-                  const returnInput = document.getElementById('return-date') as HTMLInputElement;
-                  if (returnInput) {
-                    returnInput.min = e.target.value;
-                    const maxDate = new Date(e.target.value);
-                    maxDate.setDate(maxDate.getDate() + 15);
-                    returnInput.max = maxDate.toISOString().split('T')[0];
-                  }
-                }}
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Return Date</label>
-              <input 
-                id="return-date"
-                type="date" 
-                required 
-                className="flex-1 border-2 border-gray-800 p-2" 
-                defaultValue={new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]} 
-                min={new Date().toISOString().split('T')[0]}
-                max={new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-              />
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <label className="w-40 font-bold text-sm mt-2">Remarks</label>
-              <div className="flex-1">
-                <textarea 
-                  className="w-full border-2 border-gray-800 p-2 h-20" 
-                  placeholder="Text area/Text Non Mandatory"
-                  value={remarks}
-                  onChange={(e) => setRemarks(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-8 pt-4">
-              <button 
-                type="button"
-                onClick={resetState}
-                className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all"
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit"
-                disabled={isLoading}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all"
-              >
-                {isLoading ? 'Processing...' : 'Confirm'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {activeTab === 'return' && (
-        <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border-2 border-gray-800 animate-in fade-in">
-          <div className="flex justify-between items-center mb-8 text-sm font-medium text-gray-600">
-            <span className="font-bold underline">Chart</span>
-            <h1 className="text-xl font-bold text-gray-900 uppercase">Transactions</h1>
-            <Link href={user?.role === 'Admin' ? '/admin' : '/user'} className="font-bold underline">Home</Link>
-          </div>
-
-          <h2 className="text-md font-bold mb-4 bg-gray-50 border-b-2 border-black p-2">Return Book</h2>
-          
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Enter Book Name</label>
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  className="w-full border-2 border-gray-800 p-2 font-bold bg-white"
-                  placeholder="Drop Down"
-                  list="return-book-titles"
-                />
-                <datalist id="return-book-titles">
-                  {activeTransactions.map(t => <option key={t._id} value={t.assetId?.title} />)}
-                </datalist>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Enter Author</label>
-              <input 
-                type="text" 
-                readOnly 
-                className="flex-1 border-2 border-gray-800 p-2 bg-gray-50 font-bold"
-                value={selectedTransaction?.assetId?.author || 'Automatically populated'} 
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Serial No</label>
-              <div className="flex-1 relative">
-                <select 
-                  onChange={(e) => {
-                    const tx = activeTransactions.find(t => t.assetId?._id === e.target.value);
-                    if (tx) setSelectedTransaction(tx);
-                  }}
-                  className="w-full border-2 border-gray-800 p-2 text-black font-bold"
-                >
-                  <option value="">Drop Down (Mandatory)</option>
-                  {activeTransactions.map(t => (
-                    <option key={t._id} value={t.assetId?._id}>
-                      {t.assetId?.serialNo} - {t.assetId?.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Issue Date</label>
-              <input 
-                type="text" 
-                readOnly 
-                className="flex-1 border-2 border-gray-800 p-2 bg-gray-50 font-bold"
-                value={selectedTransaction ? new Date(selectedTransaction.issueDate).toLocaleDateString() : 'Automatically populated'} 
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-40 font-bold text-sm">Return Date</label>
-              <input 
-                type="text" 
-                readOnly 
-                className="flex-1 border-2 border-gray-800 p-2 bg-gray-50 font-bold"
-                value={selectedTransaction ? new Date(selectedTransaction.dueDate).toLocaleDateString() : 'Automatically populated'} 
-              />
-            </div>
-            
-            <div className="flex items-start space-x-4">
-              <label className="w-40 font-bold text-sm mt-2">Remarks</label>
-              <textarea 
-                className="flex-1 border-2 border-gray-800 p-2 h-16"
-                placeholder="Non Mandatory"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8 pt-8 px-4">
-            <button 
-              onClick={resetState}
-              className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all uppercase"
-            >
-              Cancel
-            </button>
-            <button 
-              onClick={() => {
-                if (!selectedTransaction) alert('Please select a book/serial to return.');
-                else setActiveTab('pay');
-              }}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all uppercase"
-            >
-              Confirm
-            </button>
-          </div>
-          <div className="flex justify-end pt-4">
-            <button onClick={logout} className="font-bold underline text-sm">Log Out</button>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'pay' && selectedTransaction && (
-        <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border-2 border-gray-800 animate-in fade-in">
-          <div className="flex justify-between items-center mb-8 text-sm font-medium text-gray-600">
-            <span className="font-bold underline">Chart</span>
-            <h1 className="text-xl font-bold text-gray-900 uppercase">Transactions</h1>
-            <Link href={user?.role === 'Admin' ? '/admin' : '/user'} className="font-bold underline">Home</Link>
-          </div>
-
-          <h2 className="text-md font-bold mb-4 bg-gray-50 border-b-2 border-black p-2">Pay Fine</h2>
-          
-          <form onSubmit={handleReturn} className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Enter Book Name</label>
-              <input type="text" readOnly className="flex-1 bg-white border-2 border-gray-800 p-2 font-bold" value={selectedTransaction.assetId?.title || ''} />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Enter Author</label>
-              <input type="text" readOnly className="flex-1 bg-white border-2 border-gray-800 p-2" value={selectedTransaction.assetId?.author || ''} />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Serial No</label>
-              <input type="text" readOnly className="flex-1 bg-white border-2 border-gray-800 p-2" value={selectedTransaction.assetId?.serialNo || ''} />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Issue Date</label>
-              <input type="text" readOnly className="flex-1 bg-white border-2 border-gray-800 p-1 font-bold" value={new Date(selectedTransaction.issueDate).toLocaleDateString()} />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Return Date</label>
-              <input type="text" readOnly className="flex-1 bg-white border-2 border-gray-800 p-1 font-bold" value={new Date(selectedTransaction.dueDate).toLocaleDateString()} />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Actual Return Date</label>
-              <input 
-                type="text" 
-                readOnly 
-                className="flex-1 bg-white border-2 border-gray-800 p-1" 
-                value={new Date().toLocaleDateString()}
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Fine Calculated</label>
-              <input 
-                type="text" 
-                readOnly 
-                className="flex-1 bg-white border-2 border-gray-800 p-2 font-extrabold text-blue-800" 
-                value={`₹${Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10}`} 
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-44 font-bold text-sm">Fine Paid</label>
-              <div className="flex items-center space-x-2">
-                <input 
-                  type="checkbox" 
-                  className="h-5 w-5 accent-blue-600"
-                  checked={finePaid}
-                  onChange={(e) => setFinePaid(e.target.checked)}
-                />
-                <span className="text-xs text-gray-500">(by default unchecked)</span>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <label className="w-44 font-bold text-sm mt-2">Remarks</label>
-              <textarea 
-                className="flex-1 border-2 border-gray-800 p-2 h-16" 
-                placeholder="Non Mandatory"
-                value={remarks}
-                readOnly
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-8 pt-8 px-4">
-              <button 
-                type="button"
-                onClick={() => router.push('/status/cancelled?type=transaction')}
-                className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all uppercase"
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit"
-                disabled={isLoading}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] transform active:translate-y-1 active:shadow-none transition-all uppercase"
-              >
-                {isLoading ? 'Processing...' : 'Confirm'}
-              </button>
-            </div>
-            <div className="flex justify-end pt-4">
-              <button onClick={logout} className="font-bold underline text-sm">Log Out</button>
-            </div>
-          </form>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
