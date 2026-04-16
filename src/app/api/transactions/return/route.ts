@@ -3,7 +3,7 @@ import dbConnect from '@/lib/db';
 import Asset from '@/models/Asset';
 import Transaction from '@/models/Transaction';
 
-export async function PATCH(request: Request) {
+export async function POST(request: Request) {
   try {
     await dbConnect();
     const { transactionId, isFinePaid } = await request.json();

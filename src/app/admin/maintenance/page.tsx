@@ -1,34 +1,87 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Users, Database, UserPlus } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
-export default function MaintenanceHome() {
-  const sections = [
-    { name: 'Membership', href: '/admin/maintenance/membership', icon: Users, description: 'Add/Update library members' },
-    { name: 'Books/Movies', href: '/admin/maintenance/assets', icon: Database, description: 'Manage library inventory' },
-    { name: 'Users', href: '/admin/maintenance/users', icon: UserPlus, description: 'Manage software user accounts' },
+export default function Housekeeping() {
+  const { logout } = useAuth();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const menuItems = [
+    { label: 'Membership', slug: 'membership' },
+    { label: 'Books/Movies', slug: 'assets' },
+    { label: 'User Management', slug: 'users' },
   ];
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Maintenance</h1>
-        <p className="text-gray-600">Administrative tools for system management.</p>
-      </div>
+    <div className="max-w-2xl mx-auto py-12 px-6">
+      <div className="border border-black bg-white p-2 min-h-[400px] relative">
+        
+        {/* Header Navigation */}
+        <div className="flex justify-between items-center mb-0 px-2 font-bold select-none text-sm">
+          <span className="hover:underline cursor-pointer border-b border-black">Chart</span>
+          <span className="text-xl px-24 invisible">Housekeeping</span>
+          <Link href="/admin" className="hover:underline border-b border-black">Home</Link>
+        </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {sections.map((section) => (
-          <Link
-            key={section.name}
-            href={section.href}
-            className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow transition-shadow hover:shadow-md border border-gray-200"
+        {/* Header Label */}
+        <div className="text-center mb-4">
+          <h1 className="text-xl font-bold inline-block border-x border-b border-black px-12 py-1">
+            Housekeeping
+          </h1>
+        </div>
+
+        {/* Selection Table */}
+        <div className="mt-8">
+          <table className="w-full border-collapse">
+            <tbody>
+              {menuItems.map((item) => (
+                <tr key={item.label} className="h-16">
+                  {/* Category Label */}
+                  <td className="w-1/2 p-2 align-top">
+                    <button 
+                      onClick={() => setSelectedCategory(selectedCategory === item.label ? null : item.label)}
+                      className={`text-xl font-bold hover:underline ${selectedCategory === item.label ? 'text-blue-700' : 'text-black'}`}
+                    >
+                      {item.label}
+                    </button>
+                  </td>
+                  
+                  {/* Selection Options (Only shown after click) */}
+                  <td className="w-1/2 p-2 align-top border-l border-black">
+                    {selectedCategory === item.label && (
+                      <div className="flex flex-col space-y-1 font-bold text-lg">
+                        <Link 
+                          href={`/admin/maintenance/${item.slug}?mode=add`}
+                          className="hover:underline text-black hover:text-blue-600"
+                        >
+                          Add
+                        </Link>
+                        <Link 
+                          href={`/admin/maintenance/${item.slug}?mode=update`}
+                          className="hover:underline text-black hover:text-blue-600"
+                        >
+                          Update
+                        </Link>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer Navigation */}
+        <div className="absolute bottom-4 right-4">
+          <button 
+            onClick={logout}
+            className="text-xl font-bold text-black border-b-2 border-black hover:text-blue-700"
           >
-            <section.icon className="h-10 w-10 text-indigo-600 mb-4" />
-            <h2 className="text-lg font-semibold text-gray-900">{section.name}</h2>
-            <p className="text-sm text-gray-500 text-center mt-2">{section.description}</p>
-          </Link>
-        ))}
+            Log Out
+          </button>
+        </div>
       </div>
     </div>
   );

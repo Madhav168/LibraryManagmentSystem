@@ -1,8 +1,16 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LogoutSuccess() {
+  const { completeLogout } = useAuth();
+
+  useEffect(() => {
+    // Clear user state only after we've successfully landed on this page
+    completeLogout();
+  }, [completeLogout]);
   return (
     <div className="max-w-6xl mx-auto py-12 px-4 font-sans text-sm">
       <div className="border-2 border-black bg-white p-8 min-h-[400px] flex flex-col justify-between">
@@ -10,7 +18,7 @@ export default function LogoutSuccess() {
         {/* Header Navigation */}
         <div className="flex justify-between items-start">
           <Link href="/reports" className="font-bold underline">Chart</Link>
-          <Link href="/login" className="font-bold underline text-blue-600 hover:text-blue-800 uppercase trackers-wide">
+          <Link href="/" className="font-bold underline text-blue-600 hover:text-blue-800 uppercase trackers-wide">
             Login
           </Link>
         </div>

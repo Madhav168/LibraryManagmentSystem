@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     await dbConnect();
     const data = await request.json();
     
-    if (!data.title || !data.author || !data.category || !data.type || data.quantity === undefined) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!data.title || !data.author || !data.category || !data.type || !data.serialNo || data.quantity === undefined) {
+      return NextResponse.json({ error: 'Missing required fields (title, author, category, type, serialNo, quantity)' }, { status: 400 });
     }
 
     // Set available copies to total quantity on creation

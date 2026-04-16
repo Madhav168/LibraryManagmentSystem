@@ -31,6 +31,7 @@ export async function GET(request: Request) {
           return { ...m.toObject(), pendingFine: totalFine };
         }));
         return NextResponse.json(membersWithFines);
+      case 'active':
       case 'active_issues':
         return NextResponse.json(
           await Transaction.find({ actualReturnDate: { $exists: false } })

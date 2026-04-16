@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useSearchParams } from 'next/navigation';
 
 export default function TransactionSuccess() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const searchParams = useSearchParams();
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4 font-sans text-sm">
@@ -13,13 +15,15 @@ export default function TransactionSuccess() {
         {/* Header Navigation */}
         <div className="flex justify-between items-start">
           <Link href="/admin/reports" className="font-bold underline">Chart</Link>
-          <Link href="/admin" className="font-bold underline">Home</Link>
+          <Link href={user?.role === 'Admin' ? '/admin' : '/user'} className="font-bold underline">Home</Link>
         </div>
 
         {/* Centered Content */}
         <div className="flex-1 flex items-center justify-center">
-          <h1 className="text-2xl font-black uppercase tracking-tight">
-            Transaction completeld successfully.
+          <h1 className="text-2xl font-black uppercase tracking-tight text-center">
+            {searchParams.get('type') === 'transaction' 
+              ? 'Transaction Completed Successfully' 
+              : 'REQUEST COMPLETED SUCCESSFULLY'}
           </h1>
         </div>
 
