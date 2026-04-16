@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-export default function UserMaintenance() {
+function UsersForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { logout } = useAuth();
@@ -13,18 +13,16 @@ export default function UserMaintenance() {
   const [mode, setMode] = useState<'add' | 'update'>((searchParams.get('mode') as any) || 'add');
   const [formData, setFormData] = useState({
     name: '',
-    isActive: true,
-    isAdmin: false,
-    id: '', // For identifying existing users
+    email: '',
+    role: 'User',
+    password: '',
   });
   const [users, setUsers] = useState<any[]>([]);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     const qMode = searchParams.get('mode');
-    if (qMode === 'add' || qMode === 'update') {
-      setMode(qMode);
-    }
+    if (qMode === 'add' || qMode === 'update') setMode(qMode);
   }, [searchParams]);
 
   useEffect(() => {
@@ -36,14 +34,8 @@ export default function UserMaintenance() {
       const res = await fetch('/api/users');
       const data = await res.json();
       if (res.ok) setUsers(data);
-    } catch(e) {}
+    } catch (e) {}
   };
-
-  const menuItems = [
-    { label: 'Membership', add: '/admin/maintenance/membership?mode=add', update: '/admin/maintenance/membership?mode=update' },
-    { label: 'Books/Movies', add: '/admin/maintenance/assets?mode=add', update: '/admin/maintenance/assets?mode=update' },
-    { label: 'User Management', add: '/admin/maintenance/users?mode=add', update: '/admin/maintenance/users?mode=update' },
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +44,7 @@ export default function UserMaintenance() {
     const res = await fetch('/api/users', {
       method: isUpdate ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(isUpdate ? { ...formData } : formData),
+      body: JSON.stringify(isUpdate ? { ...formData, id: formData.email } : formData),
     });
 
     if (res.ok) {
@@ -73,7 +65,6 @@ export default function UserMaintenance() {
         <div className="flex justify-between items-start mb-2 px-2">
           <div className="flex flex-col">
             <span className="font-bold underline cursor-pointer">Chart</span>
-            <span className="text-xl font-bold mt-2 ml-16 underline underline-offset-4 invisible">Reports</span>
           </div>
           <Link href="/admin" className="font-bold underline">Home</Link>
         </div>
@@ -100,54 +91,64 @@ export default function UserMaintenance() {
             
             {message && <div className="text-center font-bold text-red-600 mb-4">{message}</div>}
 
-            <form onSubmit={handleSubmit} className="space-y-8 max-w-lg mx-auto">
-              <div className="flex justify-center space-x-12 mb-4 font-bold border-b border-gray-100 pb-2">
-                <label className="flex items-center space-x-2">
-                  <input type="radio" value="add" checked={mode === 'add'} onChange={() => setMode('add')} className="accent-blue-600" />
-                  <span>New User</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="radio" value="update" checked={mode === 'update'} onChange={() => setMode('update')} className="accent-blue-600" />
-                  <span>Existing User</span>
-                </label>
-              </div>
-
-              <div className="grid grid-cols-2 items-center gap-8">
-                <label className="font-bold">Name</label>
-                <div className="relative">
-                  <input 
-                    list="user-list"
-                    required 
-                    className="w-full border border-black p-1 bg-white font-bold" 
-                    value={formData.name} 
-                    onChange={e => {
-                      const val = e.target.value;
-                      const match = users.find(u => u.name === val);
-                      if (match && mode === 'update') {
-                        setFormData({
-                          name: val,
-                          isActive: match.status === 'Active',
-                          isAdmin: match.role === 'Admin',
-                          id: match._id
-                        });
-                      } else {
-                        setFormData({...formData, name: val});
-                      }
-                    }} 
-                  />
-                  {mode === 'update' && (
-                    <datalist id="user-list">
-                      {users.map(u => <option key={u._id} value={u.name} />)}
-                    </datalist>
-                  )}
+            <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
+              {mode === 'add' ? (
+                <div className="grid grid-cols-2 items-center gap-4">
+                  <label className="font-bold">User Name</label>
+                  <input required className="border border-black p-1 bg-white" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  
+                  <label className="font-bold">Email/User ID</label>
+                  <input required type="email" className="border border-black p-1 bg-white" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  
+                  <label className="font-bold">Role</label>
+                  <select className="border border-black p-1 bg-white font-bold" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                    <option>User</option>
+                    <option>Admin</option>
+                  </select>
+                  
+                  <label className="font-bold">Password</label>
+                  <input required type="password" className="border border-black p-1 bg-white" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                 </div>
-                
-                <label className="font-bold text-blue-700">Active</label>
-                <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-5 h-5 accent-blue-600" />
-                
-                <label className="font-bold text-blue-700">Admin Privileges</label>
-                <input type="checkbox" checked={formData.isAdmin} onChange={e => setFormData({...formData, isAdmin: e.target.checked})} className="w-5 h-5 accent-blue-600" />
-              </div>
+              ) : (
+                <div className="grid grid-cols-2 items-center gap-4">
+                  <label className="font-bold">Email/User ID</label>
+                  <div className="relative">
+                    <input 
+                      list="user-list"
+                      required 
+                      className="w-full border border-black p-1 bg-white font-bold" 
+                      value={formData.email}
+                      onChange={e => {
+                        const val = e.target.value;
+                        const match = users.find(u => u.email === val);
+                        if (match) {
+                          setFormData({
+                            ...formData,
+                            email: val,
+                            name: match.name,
+                            role: match.role || 'User',
+                            password: '', // Keep password empty for security during update
+                          });
+                        } else {
+                          setFormData({...formData, email: val});
+                        }
+                      }} 
+                    />
+                    <datalist id="user-list">
+                      {users.map(u => <option key={u._id} value={u.email}>{u.name}</option>)}
+                    </datalist>
+                  </div>
+
+                  <label className="font-bold">User Name</label>
+                  <input readOnly className="border border-black p-1 bg-gray-200 cursor-not-allowed" value={formData.name || 'Search Email...'} />
+                  
+                  <label className="font-bold">Role</label>
+                  <select className="border border-black p-1 bg-white font-bold" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                    <option>User</option>
+                    <option>Admin</option>
+                  </select>
+                </div>
+              )}
 
               <div className="flex justify-center space-x-12 mt-12 pb-8">
                 <Link href="/status/cancelled" className={buttonStyle}>Cancel</Link>
@@ -165,5 +166,13 @@ export default function UserMaintenance() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function UsersMaintenance() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-bold">Loading...</div>}>
+      <UsersForm />
+    </Suspense>
   );
 }

@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useSearchParams } from 'next/navigation';
 
-export default function TransactionCancelled() {
+import { Suspense } from 'react';
+
+function CancelledContent() {
   const { user, logout } = useAuth();
   const searchParams = useSearchParams();
 
@@ -38,5 +40,13 @@ export default function TransactionCancelled() {
         <p>If logged in as user - home will take to User Home Page</p>
       </div>
     </div>
+  );
+}
+
+export default function TransactionCancelled() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-bold">Loading...</div>}>
+      <CancelledContent />
+    </Suspense>
   );
 }

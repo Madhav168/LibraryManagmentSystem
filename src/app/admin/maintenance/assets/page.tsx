@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-export default function AssetMaintenance() {
+function AssetsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { logout } = useAuth();
@@ -13,20 +13,18 @@ export default function AssetMaintenance() {
   const [mode, setMode] = useState<'add' | 'update'>((searchParams.get('mode') as any) || 'add');
   const [formData, setFormData] = useState({
     title: '',
-    type: 'Book',
-    procurementDate: new Date().toISOString().split('T')[0],
-    quantity: 1,
+    author: '',
     serialNo: '',
-    status: 'Available'
+    status: 'Available',
+    type: 'Book',
+    date: new Date().toISOString().split('T')[0],
   });
   const [assets, setAssets] = useState<any[]>([]);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     const qMode = searchParams.get('mode');
-    if (qMode === 'add' || qMode === 'update') {
-      setMode(qMode);
-    }
+    if (qMode === 'add' || qMode === 'update') setMode(qMode);
   }, [searchParams]);
 
   useEffect(() => {
@@ -38,14 +36,8 @@ export default function AssetMaintenance() {
       const res = await fetch('/api/assets');
       const data = await res.json();
       if (res.ok) setAssets(data);
-    } catch(e) {}
+    } catch (e) {}
   };
-
-  const menuItems = [
-    { label: 'Membership', add: '/admin/maintenance/membership?mode=add', update: '/admin/maintenance/membership?mode=update' },
-    { label: 'Books/Movies', add: '/admin/maintenance/assets?mode=add', update: '/admin/maintenance/assets?mode=update' },
-    { label: 'User Management', add: '/admin/maintenance/users?mode=add', update: '/admin/maintenance/users?mode=update' },
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +67,6 @@ export default function AssetMaintenance() {
         <div className="flex justify-between items-start mb-2 px-2">
           <div className="flex flex-col">
             <span className="font-bold underline cursor-pointer">Chart</span>
-            <span className="text-xl font-bold mt-2 ml-16 underline underline-offset-4 invisible">Reports</span>
           </div>
           <Link href="/admin" className="font-bold underline">Home</Link>
         </div>
@@ -103,62 +94,24 @@ export default function AssetMaintenance() {
             {message && <div className="text-center font-bold text-red-600 mb-4">{message}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
-              <div className="flex justify-center space-x-12 mb-4 font-bold border-b border-gray-100 pb-2">
-                <label className="flex items-center space-x-2">
-                  <input type="radio" value="Book" checked={formData.type === 'Book'} onChange={e => setFormData({...formData, type: e.target.value})} className="accent-blue-600" />
-                  <span>Book</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="radio" value="Movie" checked={formData.type === 'Movie'} onChange={e => setFormData({...formData, type: e.target.value})} className="accent-blue-600" />
-                  <span>Movie</span>
-                </label>
-              </div>
-
               {mode === 'add' ? (
                 <div className="grid grid-cols-2 items-center gap-4">
+                  <label className="font-bold italic">Radio Button - Book</label>
+                  <label className="font-bold italic flex items-center space-x-2">
+                    <input type="radio" name="type" checked={formData.type === 'Book'} onChange={() => setFormData({...formData, type: 'Book'})} />
+                    <span>Radio Button - Movie</span>
+                    <input type="radio" name="type" checked={formData.type === 'Movie'} onChange={() => setFormData({...formData, type: 'Movie'})} />
+                  </label>
+
                   <label className="font-bold">Book/Movie Name</label>
                   <input required className="border border-black p-1 bg-white" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
                   
-                  <label className="font-bold">Procurement Date</label>
-                  <input type="date" required className="border border-black p-1 bg-white font-bold" value={formData.procurementDate} onChange={e => setFormData({...formData, procurementDate: e.target.value})} />
+                  <label className="font-bold">Author</label>
+                  <input required className="border border-black p-1 bg-white" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} />
                   
-                  <label className="font-bold">Quantity</label>
-                  <input type="number" min="1" required className="border border-black p-1 bg-white" value={formData.quantity} onChange={e => setFormData({...formData, quantity: parseInt(e.target.value)})} />
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 items-center gap-4">
-                  <label className="font-bold">Search Title/Serial</label>
-                  <div className="relative">
-                    <input 
-                      list="asset-list"
-                      required 
-                      className="w-full border border-black p-1 bg-white font-bold" 
-                      value={formData.title} 
-                      onChange={e => {
-                        const val = e.target.value;
-                        const match = assets.find(a => a.title === val || a.serialNo === val);
-                        if (match) {
-                          setFormData({
-                            title: match.title,
-                            serialNo: match.serialNo,
-                            type: match.type,
-                            procurementDate: new Date(match.procurementDate).toISOString().split('T')[0],
-                            quantity: match.quantity,
-                            status: match.status || 'Available'
-                          });
-                        } else {
-                          setFormData({...formData, title: val, serialNo: ''});
-                        }
-                      }} 
-                    />
-                    <datalist id="asset-list">
-                      {assets.map(a => <option key={a._id} value={a.title}>{a.serialNo}</option>)}
-                    </datalist>
-                  </div>
+                  <label className="font-bold">Serial No</label>
+                  <input required className="border border-black p-1 bg-white" value={formData.serialNo} onChange={e => setFormData({...formData, serialNo: e.target.value})} />
                   
-                  <label className="font-bold font-black text-blue-700">Serial No</label>
-                  <input readOnly className="border border-black p-1 bg-gray-200 cursor-not-allowed font-black" value={formData.serialNo || 'Search Above...'} />
-
                   <label className="font-bold">Status</label>
                   <select className="border border-black p-1 bg-white font-bold" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
                     <option>Available</option>
@@ -171,7 +124,63 @@ export default function AssetMaintenance() {
                   </select>
                   
                   <label className="font-bold">Date</label>
-                  <input type="date" required className="border border-black p-1 bg-white font-bold" value={formData.procurementDate} onChange={e => setFormData({...formData, procurementDate: e.target.value})} />
+                  <input type="date" required className="border border-black p-1 bg-white font-bold" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 items-center gap-4">
+                   <label className="font-bold italic">Radio Button - Book</label>
+                  <label className="font-bold italic flex items-center space-x-2">
+                    <input type="radio" name="type" checked={formData.type === 'Book'} onChange={() => setFormData({...formData, type: 'Book'})} />
+                    <span>Radio Button - Movie</span>
+                    <input type="radio" name="type" checked={formData.type === 'Movie'} onChange={() => setFormData({...formData, type: 'Movie'})} />
+                  </label>
+
+                  <label className="font-bold">Book/Movie Name</label>
+                  <div className="relative">
+                    <input 
+                      list="asset-list"
+                      required 
+                      className="w-full border border-black p-1 bg-white font-bold" 
+                      value={formData.title}
+                      onChange={e => {
+                        const val = e.target.value;
+                        const match = assets.find(a => a.title === val);
+                        if (match) {
+                          setFormData({
+                            ...formData,
+                            title: val,
+                            author: match.author,
+                            serialNo: match.serialNo,
+                            status: match.status || 'Available',
+                            type: match.type || 'Book',
+                            date: new Date(match.date || Date.now()).toISOString().split('T')[0]
+                          });
+                        } else {
+                          setFormData({...formData, title: val});
+                        }
+                      }} 
+                    />
+                    <datalist id="asset-list">
+                      {assets.map(a => <option key={a._id} value={a.title}>{a.author}</option>)}
+                    </datalist>
+                  </div>
+
+                  <label className="font-bold">Serial No</label>
+                  <input readOnly className="border border-black p-1 bg-gray-200 cursor-not-allowed" value={formData.serialNo || 'Search Name...'} />
+                  
+                  <label className="font-bold">Status</label>
+                  <select className="border border-black p-1 bg-white font-bold" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                    <option>Available</option>
+                    <option>Unavailable</option>
+                    <option>Removed</option>
+                    <option>On Repair</option>
+                    <option>To Replace</option>
+                    <option>Lost</option>
+                    <option>Damaged</option>
+                  </select>
+                  
+                  <label className="font-bold">Date</label>
+                  <input type="date" required className="border border-black p-1 bg-white font-bold" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
                 </div>
               )}
 
@@ -191,5 +200,13 @@ export default function AssetMaintenance() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AssetsMaintenance() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-bold">Loading...</div>}>
+      <AssetsForm />
+    </Suspense>
   );
 }

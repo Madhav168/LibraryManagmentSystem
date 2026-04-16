@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-export default function MembershipMaintenance() {
+function MembershipForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { logout } = useAuth();
@@ -45,12 +45,6 @@ export default function MembershipMaintenance() {
     } catch (e) {}
   };
 
-  const menuItems = [
-    { label: 'Membership', add: '/admin/maintenance/membership?mode=add', update: '/admin/maintenance/membership?mode=update' },
-    { label: 'Books/Movies', add: '/admin/maintenance/assets?mode=add', update: '/admin/maintenance/assets?mode=update' },
-    { label: 'User Management', add: '/admin/maintenance/users?mode=add', update: '/admin/maintenance/users?mode=update' },
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const isUpdate = mode === 'update';
@@ -79,7 +73,6 @@ export default function MembershipMaintenance() {
         <div className="flex justify-between items-start mb-2 px-2">
           <div className="flex flex-col">
             <span className="font-bold underline cursor-pointer">Chart</span>
-            <span className="text-xl font-bold mt-2 ml-16 underline underline-offset-4 invisible">Reports</span>
           </div>
           <Link href="/admin" className="font-bold underline">Home</Link>
         </div>
@@ -87,7 +80,7 @@ export default function MembershipMaintenance() {
         <div className="grid grid-cols-12 gap-0 border-t-2 border-black pt-4">
           
           {/* Side Menu (Housekeeping) */}
-          <div className="col-span-1 border-r-2 border-black pr-4 min-h-[400px]">
+          <div className="col-span-2 border-r-2 border-black pr-4 min-h-[400px]">
             <div className="flex flex-col space-y-4 font-bold text-sm">
               <Link href="/admin/maintenance/membership?mode=add" className={`hover:underline ${mode === 'add' ? 'text-blue-600' : ''}`}>Add</Link>
               <Link href="/admin/maintenance/membership?mode=update" className={`hover:underline ${mode === 'update' ? 'text-blue-600' : ''}`}>Update</Link>
@@ -99,7 +92,7 @@ export default function MembershipMaintenance() {
           </div>
 
           {/* Form Content */}
-          <div className="col-span-9 pl-8">
+          <div className="col-span-10 pl-8">
             <h1 className="text-center text-xl font-black mb-8 uppercase">
               {mode === 'add' ? 'Add Membership' : 'Update Membership'}
             </h1>
@@ -221,5 +214,13 @@ export default function MembershipMaintenance() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MembershipMaintenance() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-bold">Loading...</div>}>
+      <MembershipForm />
+    </Suspense>
   );
 }

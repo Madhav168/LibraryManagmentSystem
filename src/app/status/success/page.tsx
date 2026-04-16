@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function TransactionSuccess() {
+function SuccessContent() {
   const { user, logout } = useAuth();
   const searchParams = useSearchParams();
 
@@ -40,5 +41,13 @@ export default function TransactionSuccess() {
         <p>If logged in as user - home will take to User Home Page</p>
       </div>
     </div>
+  );
+}
+
+export default function TransactionSuccess() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-bold">Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }
