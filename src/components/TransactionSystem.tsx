@@ -158,17 +158,38 @@ export default function TransactionSystem() {
         <div className="max-w-md mx-auto mt-12 border-2 border-gray-800 p-8 rounded-lg">
           <ul className="space-y-6 text-xl font-bold text-gray-800">
             <li>
-              <button onClick={() => setActiveTab('search')} className="hover:text-indigo-600 hover:underline">
+              <button 
+                onClick={() => {
+                  setSearchResults([]);
+                  setSearchQuery('');
+                  setSearchAuthor('');
+                  setActiveTab('search');
+                }} 
+                className="hover:text-indigo-600 hover:underline"
+              >
                 Is book available?
               </button>
             </li>
             <li>
-              <button onClick={() => setActiveTab('issue')} className="hover:text-indigo-600 hover:underline">
+              <button 
+                onClick={() => {
+                  setSelectedAsset(null);
+                  setSelectedMember('');
+                  setActiveTab('issue');
+                }} 
+                className="hover:text-indigo-600 hover:underline"
+              >
                 Issue book?
               </button>
             </li>
             <li>
-              <button onClick={() => setActiveTab('return')} className="hover:text-indigo-600 hover:underline">
+              <button 
+                onClick={() => {
+                  setSelectedTransaction(null);
+                  setActiveTab('return');
+                }} 
+                className="hover:text-indigo-600 hover:underline"
+              >
                 Return book?
               </button>
             </li>

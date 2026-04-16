@@ -15,19 +15,19 @@ export default function Housekeeping() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-6">
-      <div className="border border-black bg-white p-2 min-h-[400px] relative">
+    <div className="max-w-3xl mx-auto py-12 px-6">
+      <div className="border-2 border-black bg-white p-4 min-h-[450px] relative">
         
         {/* Header Navigation */}
         <div className="flex justify-between items-center mb-0 px-2 font-bold select-none text-sm">
-          <span className="hover:underline cursor-pointer border-b border-black">Chart</span>
+          <span className="hover:underline cursor-pointer">Chart</span>
           <span className="text-xl px-24 invisible">Housekeeping</span>
-          <Link href="/admin" className="hover:underline border-b border-black">Home</Link>
+          <Link href="/admin" className="hover:underline">Home</Link>
         </div>
 
         {/* Header Label */}
-        <div className="text-center mb-4">
-          <h1 className="text-xl font-bold inline-block border-x border-b border-black px-12 py-1">
+        <div className="text-center mb-10">
+          <h1 className="text-2xl font-black inline-block border-2 border-t-0 border-black px-16 py-2 uppercase">
             Housekeeping
           </h1>
         </div>
