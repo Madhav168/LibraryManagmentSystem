@@ -18,7 +18,19 @@ export async function GET(request: Request) {
       case 'movies':
         return NextResponse.json(await Asset.find({ type: 'Movie' }));
       case 'members':
-        return NextResponse.json(await Member.find({}));
+        const members = await Member.find({});
+        const membersWithFines = await Promise.all(members.map(async (m) => {
+          const transactions = await Transaction.find({ 
+            memberId: m._id, 
+            actualReturnDate: { $exists: false } 
+          });
+          const totalFine = transactions.reduce((acc, tx) => {
+            const daysOverdue = Math.max(0, Math.floor((Date.now() - new Date(tx.dueDate).getTime()) / (1000 * 60 * 60 * 24)));
+            return acc + (daysOverdue * 10);
+          }, 0);
+          return { ...m.toObject(), pendingFine: totalFine };
+        }));
+        return NextResponse.json(membersWithFines);
       case 'active_issues':
         return NextResponse.json(
           await Transaction.find({ actualReturnDate: { $exists: false } })

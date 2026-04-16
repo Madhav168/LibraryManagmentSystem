@@ -5,8 +5,10 @@ const AssetSchema = new mongoose.Schema({
   author: { type: String, required: true },
   category: { type: String, required: true }, // e.g., Science, Fiction, etc.
   type: { type: String, enum: ['Book', 'Movie'], required: true },
+  serialNo: { type: String, required: true, unique: true },
   quantity: { type: Number, required: true },
   availableCopies: { type: Number, required: true },
+  cost: { type: Number, required: true }, // Added for reports
   procurementDate: { type: Date, required: true },
 }, { timestamps: true });
 

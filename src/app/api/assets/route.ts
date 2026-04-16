@@ -34,3 +34,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    await dbConnect();
+    const { id, ...updateData } = await request.json();
+    
+    // Calculate new availableCopies based on change in quantity
+    const oldAsset = await Asset.findById(id);
+    if (!oldAsset) return NextResponse.json({ error: 'Asset not found' }, { status: 404 });
+
+    const quantityDiff = updateData.quantity !== undefined ? updateData.quantity - oldAsset.quantity : 0;
+    const newAvailable = oldAsset.availableCopies + quantityDiff;
+
+    const asset = await Asset.findByIdAndUpdate(id, {
+      ...updateData,
+      availableCopies: Math.max(0, newAvailable)
+    }, { new: true });
+
+    return NextResponse.json(asset);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

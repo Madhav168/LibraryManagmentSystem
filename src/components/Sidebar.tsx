@@ -12,7 +12,8 @@ import {
   Users,
   Database,
   Search,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Wrench
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -32,7 +33,7 @@ export default function Sidebar() {
   const menuItems = [
     { name: 'Home', href: isAdmin ? '/admin' : '/user', icon: Home },
     ...(isAdmin ? [
-      { name: 'Maintenance', href: '/admin/maintenance', icon: Settings },
+      { name: 'Maintenance', href: '/admin/maintenance', icon: Wrench, roles: ['Admin'] },
     ] : []),
     { name: 'Transactions', href: isAdmin ? '/admin/transactions' : '/user/transactions', icon: ArrowRightLeft },
     { name: 'Reports', href: isAdmin ? '/admin/reports' : '/user/reports', icon: FileText },

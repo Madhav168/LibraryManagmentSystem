@@ -1,38 +1,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, ArrowRight, User, Book, Calendar, DollarSign, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, BookOpen, ArrowRight, ArrowLeft, History, DollarSign, Home as HomeIcon, LogOut, LayoutGrid } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
+
+type Tab = 'menu' | 'search' | 'issue' | 'return' | 'pay';
 
 export default function TransactionSystem() {
-  const [activeTab, setActiveTab] = useState<'search' | 'issue' | 'return'>('search');
+  const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState<Tab>('menu');
   const [searchQuery, setSearchQuery] = useState('');
-  const [assets, setAssets] = useState<any[]>([]);
+  const [searchAuthor, setSearchAuthor] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
-  const [activeTransactions, setActiveTransactions] = useState<any[]>([]);
-  
-  // Form states
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [selectedMember, setSelectedMember] = useState('');
-  const [remarks, setRemarks] = useState('');
-  
-  // Return state
+  const [activeTransactions, setActiveTransactions] = useState<any[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
-  const [isFinePaid, setIsFinePaid] = useState(false);
-
+  const [finePaid, setFinePaid] = useState(false);
+  const [remarks, setRemarks] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
-    if (activeTab === 'search') handleSearch();
-    if (activeTab === 'issue') fetchMembers();
-    if (activeTab === 'return') fetchActiveTransactions();
-  }, [activeTab]);
-
-  const handleSearch = async () => {
-    const res = await fetch(`/api/transactions/search?q=${searchQuery}`);
-    const data = await res.json();
-    if (res.ok) setAssets(data);
-  };
+    fetchMembers();
+    fetchActiveTransactions();
+  }, []);
 
   const fetchMembers = async () => {
     const res = await fetch('/api/members');
@@ -41,131 +34,326 @@ export default function TransactionSystem() {
   };
 
   const fetchActiveTransactions = async () => {
-    const res = await fetch('/api/reports?type=active_issues');
+    const res = await fetch('/api/reports?type=active');
     const data = await res.json();
     if (res.ok) setActiveTransactions(data);
   };
 
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!searchQuery && !searchAuthor) {
+      alert('Please enter either a Book Name or an Author to search.');
+      return;
+    }
+
+    setIsLoading(true);
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('title', searchQuery);
+    if (searchAuthor) params.append('author', searchAuthor);
+
+    const res = await fetch(`/api/transactions/search?${params.toString()}`);
+    const data = await res.json();
+    setSearchResults(data);
+    setIsLoading(false);
+  };
+
   const handleIssue = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedAsset || !selectedMember) return;
+    
     setIsLoading(true);
-    try {
-      const res = await fetch('/api/transactions/issue', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assetId: selectedAsset._id, memberId: selectedMember, remarks }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setMessage({ type: 'success', text: 'Issued successfully!' });
+    const res = await fetch('/api/transactions/issue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        assetId: selectedAsset._id, 
+        memberId: selectedMember,
+        remarks 
+      }),
+    });
+
+    if (res.ok) {
+      alert('Book issued successfully!');
+      setActiveTab('menu');
       setSelectedAsset(null);
       setSelectedMember('');
-      setRemarks('');
-      setActiveTab('search');
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message });
-    } finally {
-      setIsLoading(false);
+      fetchActiveTransactions();
+    } else {
+      const data = await res.json();
+      alert(data.error || 'Issue failed');
     }
+    setIsLoading(false);
   };
 
   const handleReturn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/transactions/return', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transactionId: selectedTransaction._id, isFinePaid }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setMessage({ type: 'success', text: 'Returned successfully!' });
-      setSelectedTransaction(null);
-      setIsFinePaid(false);
-      fetchActiveTransactions();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message });
-    } finally {
-      setIsLoading(false);
+    if (!selectedTransaction) return;
+
+    if (selectedTransaction.fineAmount > 0 && !finePaid) {
+      alert('Fine must be paid before returning.');
+      return;
     }
+
+    setIsLoading(true);
+    const res = await fetch('/api/transactions/return', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transactionId: selectedTransaction._id }),
+    });
+
+    if (res.ok) {
+      alert('Item returned successfully!');
+      setActiveTab('menu');
+      setSelectedTransaction(null);
+      setFinePaid(false);
+      fetchActiveTransactions();
+    }
+    setIsLoading(false);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex space-x-4 border-b">
-        <button 
-          onClick={() => setActiveTab('search')}
-          className={`pb-2 px-4 text-sm font-medium ${activeTab === 'search' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-        >
-          Is Asset Available?
-        </button>
-        <button 
-          onClick={() => setActiveTab('issue')}
-          className={`pb-2 px-4 text-sm font-medium ${activeTab === 'issue' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-        >
-          Issue Asset
-        </button>
-        <button 
-          onClick={() => setActiveTab('return')}
-          className={`pb-2 px-4 text-sm font-medium ${activeTab === 'return' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-        >
-          Return Asset
-        </button>
+    <div className="bg-white min-h-[500px] p-6 rounded-lg shadow-sm border border-gray-200">
+      {/* Top Navigation Links from Excel */}
+      <div className="flex justify-between mb-8 text-sm font-medium text-gray-600">
+        <span className="cursor-pointer hover:underline">Chart</span>
+        <h1 className="text-xl font-bold text-gray-900 border-b pb-1">Transactions</h1>
+        <Link href={user?.role === 'Admin' ? '/admin' : '/user'} className="hover:underline">Home</Link>
       </div>
 
-      {message.text && (
-        <div className={`p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-          {message.text}
+      {activeTab === 'menu' && (
+        <div className="max-w-md mx-auto mt-12 border-2 border-gray-800 p-8 rounded-lg">
+          <ul className="space-y-6 text-xl font-bold text-gray-800">
+            <li>
+              <button onClick={() => setActiveTab('search')} className="hover:text-indigo-600 hover:underline">
+                Is book available?
+              </button>
+            </li>
+            <li>
+              <button onClick={() => setActiveTab('issue')} className="hover:text-indigo-600 hover:underline">
+                Issue book?
+              </button>
+            </li>
+            <li>
+              <button onClick={() => setActiveTab('return')} className="hover:text-indigo-600 hover:underline">
+                Return book?
+              </button>
+            </li>
+            <li className="flex justify-between items-center">
+              <button onClick={() => setActiveTab('pay')} className="hover:text-indigo-600 hover:underline">
+                Pay Fine?
+              </button>
+              <button onClick={logout} className="text-gray-900 hover:underline">Log Out</button>
+            </li>
+          </ul>
         </div>
       )}
 
+      {activeTab !== 'menu' && (
+        <button 
+          onClick={() => setActiveTab('menu')}
+          className="mb-6 flex items-center text-sm text-indigo-600 font-medium hover:underline"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Transaction Menu
+        </button>
+      )}
+
       {activeTab === 'search' && (
-        <div className="space-y-4">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="max-w-xl mx-auto space-y-8 border-2 border-gray-800 p-8 rounded-lg animate-in fade-in">
+          <h2 className="text-xl font-bold border-b pb-2 cursor-pointer" onClick={() => setActiveTab('menu')}>
+            Book Availability
+          </h2>
+          
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <label className="w-40 font-bold">Enter Book Name</label>
               <input
                 type="text"
-                className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
-                placeholder="Search by title, author, or category..."
+                className="flex-1 border-2 border-gray-800 p-2"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
-            <button onClick={handleSearch} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+            
+            <div className="flex items-center space-x-4">
+              <label className="w-40 font-bold">Enter Author</label>
+              <input
+                type="text"
+                className="flex-1 border-2 border-gray-800 p-2"
+                value={searchAuthor}
+                onChange={(e) => setSearchAuthor(e.target.value)}
+              />
+            </div>
+
+            <div className="flex justify-center space-x-4 pt-4">
+              <button 
+                onClick={() => setActiveTab('menu')}
+                className="flex-1 bg-blue-400 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+              >
+                Back
+              </button>
+              <button 
+                onClick={handleSearch}
+                disabled={isLoading}
+                className="flex-1 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+              >
+                {isLoading ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-8 border-2 border-gray-800 overflow-hidden text-gray-900">
+            <table className="min-w-full divide-y divide-gray-800">
+              <thead className="bg-gray-50 border-b-2 border-gray-800 font-bold">
+                <tr className="divide-x divide-gray-800">
+                  <th className="px-6 py-3 text-left text-sm uppercase">Book Name</th>
+                  <th className="px-6 py-3 text-left text-sm uppercase">Author Name</th>
+                  <th className="px-6 py-3 text-left text-sm uppercase">Serial Number</th>
+                  <th className="px-6 py-3 text-left text-sm uppercase text-center">Available</th>
+                  <th className="px-6 py-3 text-left text-sm uppercase">Select to issue the book</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800 font-medium">
+                {searchResults.map((asset) => (
+                  <tr key={asset._id} className="divide-x divide-gray-800 hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{asset.title}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{asset.author}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{asset.serialNo}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      {asset.availableCopies > 0 ? 'Y' : 'N'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      <input 
+                        type="radio" 
+                        name="asset-select"
+                        checked={selectedAsset?._id === asset._id}
+                        onChange={() => setSelectedAsset(asset)}
+                        disabled={asset.availableCopies <= 0}
+                        className="h-5 w-5 text-indigo-600 cursor-pointer"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-center space-x-4 pt-8">
+            <button 
+              onClick={() => { setSearchResults([]); setSelectedAsset(null); }}
+              className="w-48 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+            >
               Search
+            </button>
+            <button 
+              onClick={() => { setActiveTab('menu'); setSearchResults([]); setSelectedAsset(null); }}
+              className="w-48 bg-blue-400 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+            >
+              Cancel
             </button>
           </div>
 
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
+          {selectedAsset && (
+            <div className="flex justify-center mt-6">
+              <button 
+                onClick={() => setActiveTab('issue')} 
+                className="bg-green-600 text-white px-12 py-3 rounded-lg font-bold hover:bg-green-700 shadow-md transform hover:scale-105 transition-all"
+              >
+                Continue to Issue Book ({selectedAsset.title})
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'issue' && (
+        <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border-2 border-gray-800 animate-in slide-in-from-bottom-4 duration-300">
+          <h2 className="text-xl font-bold mb-6 text-center border-b pb-2">
+            Book Issue
+          </h2>
+          <form onSubmit={handleIssue} className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <label className="w-32 font-bold text-sm">Enter Book Name</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2 font-bold" value={selectedAsset?.title || ''} />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-32 font-bold text-sm">Enter Author</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2" value={selectedAsset?.author || ''} />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-32 font-bold text-sm">Issue Date</label>
+              <input type="date" required className="flex-1 border-2 border-gray-800 p-2" defaultValue={new Date().toISOString().split('T')[0]} />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-32 font-bold text-sm">Return Date</label>
+              <input 
+                type="date" 
+                required 
+                className="flex-1 border-2 border-gray-800 p-2" 
+                defaultValue={new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]} 
+                max={new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div className="flex items-start space-x-4">
+              <label className="w-32 font-bold text-sm mt-2">Remarks</label>
+              <textarea 
+                className="flex-1 border-2 border-gray-800 p-2 h-20" 
+                placeholder="Optional notes..."
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+              />
+            </div>
+
+            <div className="flex justify-center space-x-4 pt-4">
+              <button 
+                type="button"
+                onClick={() => setActiveTab('search')}
+                className="flex-1 bg-blue-400 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+              >
+                {isLoading ? 'Processing...' : 'Confirm'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {activeTab === 'return' && (
+        <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
+          <h2 className="text-xl font-bold">Return Book/Movie</h2>
+          <div className="border-2 border-gray-800 overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-800">
               <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset Title</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                <tr className="divide-x divide-gray-800 font-bold">
+                  <th className="px-6 py-3 text-left text-xs uppercase">Asset</th>
+                  <th className="px-6 py-3 text-left text-xs uppercase">Member</th>
+                  <th className="px-6 py-3 text-left text-xs uppercase">Serial No</th>
+                  <th className="px-6 py-3 text-left text-xs uppercase">Due Date</th>
+                  <th className="px-6 py-3 text-left text-xs uppercase">Action</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {assets.map((asset) => (
-                  <tr key={asset._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{asset.title}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.author}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${asset.availableCopies > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {asset.availableCopies > 0 ? `${asset.availableCopies} Available` : 'Out of Stock'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <tbody className="divide-y divide-gray-800">
+                {activeTransactions.map((tx) => (
+                  <tr key={tx._id} className="divide-x divide-gray-800 hover:bg-gray-50 font-medium">
+                    <td className="px-6 py-4 text-sm">{tx.assetId?.title}</td>
+                    <td className="px-6 py-4 text-sm">{tx.memberId?.firstName} {tx.memberId?.lastName}</td>
+                    <td className="px-6 py-4 text-sm">{tx.serialNo}</td>
+                    <td className="px-6 py-4 text-sm">{new Date(tx.dueDate).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-sm">
                       <button 
-                        onClick={() => { setSelectedAsset(asset); setActiveTab('issue'); }}
-                        disabled={asset.availableCopies <= 0}
-                        className="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400"
+                        onClick={() => { setSelectedTransaction(tx); setActiveTab('pay'); }}
+                        className="text-indigo-600 font-bold hover:underline"
                       >
-                        Issue
+                        Select to Return
                       </button>
                     </td>
                   </tr>
@@ -176,186 +364,97 @@ export default function TransactionSystem() {
         </div>
       )}
 
-      {activeTab === 'issue' && (
-        <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border">
-          <h2 className="text-xl font-bold mb-6 flex items-center">
-            <ArrowRight className="mr-2 h-5 w-5 text-indigo-600" /> Issue Book/Movie
+      {activeTab === 'pay' && selectedTransaction && (
+        <div className="max-w-xl mx-auto bg-white p-8 border-2 border-gray-800 shadow-lg animate-in zoom-in-95 duration-200">
+          <h2 className="text-xl font-bold mb-6 text-center border-b pb-2">
+            Pay Fine
           </h2>
-          <form onSubmit={handleIssue} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Selected Asset</label>
-              <div className="mt-1 p-3 bg-gray-50 border rounded-md flex items-center justify-between">
-                {selectedAsset ? (
-                  <>
-                    <div>
-                      <div className="font-semibold">{selectedAsset.title}</div>
-                      <div className="text-xs text-gray-500">By {selectedAsset.author}</div>
-                    </div>
-                    <button type="button" onClick={() => setSelectedAsset(null)} className="text-xs text-red-600">Change</button>
-                  </>
-                ) : (
-                  <span className="text-gray-400 text-sm">Please select from search tab</span>
-                )}
-              </div>
+          <form onSubmit={handleReturn} className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Enter Book Name</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2 font-bold" value={selectedTransaction.assetId?.title || ''} />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Member</label>
-              <select 
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm border p-2"
-                value={selectedMember}
-                onChange={(e) => setSelectedMember(e.target.value)}
-              >
-                <option value="">Select a member</option>
-                {members.map(m => (
-                  <option key={m._id} value={m._id}>{m.firstName} {m.lastName} ({m.aadhar})</option>
-                ))}
-              </select>
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Enter Author</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2" value={selectedTransaction.assetId?.author || ''} />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Return Date</label>
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Serial No</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2" value={selectedTransaction.serialNo || ''} />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Issue Date</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2" value={new Date(selectedTransaction.issueDate).toLocaleDateString()} />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Return Date</label>
+              <input type="text" disabled className="flex-1 bg-gray-50 border-2 border-gray-800 p-2" value={new Date(selectedTransaction.dueDate).toLocaleDateString()} />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Actual Return Date</label>
+              <input 
+                type="date" 
+                required 
+                className="flex-1 border-2 border-gray-800 p-2" 
+                defaultValue={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Fine Calculated</label>
               <input 
                 type="text" 
                 disabled 
-                className="mt-1 block w-full bg-gray-50 rounded-md border-gray-300 sm:text-sm border p-2"
-                value={new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                className="flex-1 bg-gray-50 border-2 border-gray-800 p-2 font-extrabold text-indigo-600" 
+                value={`₹${Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10}`} 
               />
-              <p className="mt-1 text-xs text-gray-500">Fixed at 15 days from today as per policy.</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Remarks</label>
+            <div className="flex items-center space-x-4">
+              <label className="w-44 font-bold text-sm">Fine Paid</label>
+              <div className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  className="h-5 w-5 border-gray-300 text-indigo-600"
+                  checked={finePaid}
+                  onChange={(e) => setFinePaid(e.target.checked)}
+                />
+                <span className="text-xs text-gray-500">(by default unchecked)</span>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-4">
+              <label className="w-44 font-bold text-sm mt-2">Remarks</label>
               <textarea 
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm border p-2"
-                rows={3}
+                className="flex-1 border-2 border-gray-800 p-2 h-16" 
+                placeholder="Non Mandatory"
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || !selectedAsset || !selectedMember}
-              className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 font-semibold"
-            >
-              Confirm Issue
-            </button>
+            <div className="flex justify-center space-x-4 pt-4">
+              <button 
+                type="button"
+                onClick={() => setActiveTab('return')}
+                className="flex-1 bg-blue-400 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)]"
+              >
+                {isLoading ? 'Processing...' : 'Confirm'}
+              </button>
+            </div>
           </form>
-        </div>
-      )}
-
-      {activeTab === 'return' && (
-        <div className="space-y-6">
-          {!selectedTransaction ? (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-               <h3 className="p-4 font-semibold bg-gray-50 border-b">Select Active Issue to Return</h3>
-               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {activeTransactions.map((tx) => (
-                    <tr key={tx._id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{tx.assetId?.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.memberId?.firstName} {tx.memberId?.lastName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(tx.dueDate).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button 
-                          onClick={() => setSelectedTransaction(tx)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Return Now
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow border">
-              <h2 className="text-xl font-bold mb-6 flex items-center">
-                <DollarSign className="mr-2 h-5 w-5 text-indigo-600" /> Pay Fine & Return
-              </h2>
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">Book Title:</span>
-                    <div className="font-semibold">{selectedTransaction.assetId?.title}</div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Member:</span>
-                    <div className="font-semibold">{selectedTransaction.memberId?.firstName} {selectedTransaction.memberId?.lastName}</div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Issue Date:</span>
-                    <div className="font-semibold">{new Date(selectedTransaction.issueDate).toLocaleDateString()}</div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Due Date:</span>
-                    <div className="font-semibold">{new Date(selectedTransaction.dueDate).toLocaleDateString()}</div>
-                  </div>
-                </div>
-
-                {/* Fine Calculation logic reproduced in UI for visibility */}
-                {(() => {
-                  const today = new Date();
-                  const dueDate = new Date(selectedTransaction.dueDate);
-                  const isLate = today > dueDate;
-                  const diffDays = isLate ? Math.ceil(Math.abs(today.getTime() - dueDate.getTime()) / (1000 * 3600 * 24)) : 0;
-                  const fine = diffDays * 10;
-                  
-                  return (
-                    <div className={`p-4 rounded-md border ${isLate ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-gray-700">Calculated Fine:</span>
-                        <span className={`text-xl font-bold ${isLate ? 'text-red-700' : 'text-green-700'}`}>
-                          ₹{fine}
-                        </span>
-                      </div>
-                      {isLate && <div className="text-xs text-red-600 mt-1">Late by {diffDays} days (₹10/day)</div>}
-                    </div>
-                  );
-                })()}
-
-                <div className="flex items-center space-x-2">
-                  <input 
-                    type="checkbox" 
-                    id="finePaid" 
-                    checked={isFinePaid}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                    onChange={(e) => setIsFinePaid(e.target.checked)}
-                  />
-                  <label htmlFor="finePaid" className="text-sm font-medium text-gray-700">
-                    Confirm Fine Paid (Mandatory to check for completion)
-                  </label>
-                </div>
-
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => setSelectedTransaction(null)}
-                    className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleReturn}
-                    disabled={isLoading || !isFinePaid}
-                    className="flex-1 py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 font-semibold"
-                  >
-                    Confirm Return
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

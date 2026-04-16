@@ -1,93 +1,97 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { LogIn } from 'lucide-react';
+import { LogIn, XCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsSubmitting(true);
+    setLoading(true);
 
-    try {
-      await login({ username, password });
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
+    const success = await login(username, password);
+    if (!success) {
+      setError('Invalid User ID or Password');
     }
+    setLoading(false);
+  };
+
+  const handleCancel = () => {
+    setUsername('');
+    setPassword('');
+    setError('');
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            Library MS
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to your account
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Top Navigation Links from Excel */}
+      <div className="flex justify-between p-4 text-sm font-medium text-gray-600">
+        <span className="cursor-pointer hover:underline">Chart</span>
+        <span className="cursor-pointer hover:underline">Back</span>
+      </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4 rounded-md shadow-sm">
-            <div>
-              <label htmlFor="username" className="sr-only">Username</label>
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg border-2 border-gray-800 p-8">
+          <div className="text-center mb-10">
+            <h1 className="text-2xl font-bold text-gray-900 border-b-2 border-gray-800 pb-2 inline-block">
+              Library Management System
+            </h1>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="flex items-center space-x-4">
+              <label className="w-24 text-lg font-bold text-gray-800">User ID</label>
               <input
-                id="username"
                 type="text"
                 required
-                className="relative block w-full rounded-t-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="Username"
+                className="flex-1 border-2 border-gray-800 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-            <div>
-              <label htmlFor="password" title="password" className="sr-only">Password</label>
+
+            <div className="flex items-center space-x-4">
+              <label className="w-24 text-lg font-bold text-gray-800">Password</label>
               <input
-                id="password"
                 type="password"
                 required
-                className="relative block w-full rounded-b-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="Password"
+                className="flex-1 border-2 border-gray-800 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-          </div>
 
-          {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-              {error}
+            {error && (
+              <div className="bg-red-50 text-red-600 p-2 text-sm rounded border border-red-200 text-center">
+                {error}
+              </div>
+            )}
+
+            <div className="flex justify-center space-x-4 pt-4">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="flex-1 bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] active:shadow-none active:translate-y-1 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-[0_4px_0_rgb(30,58,138)] active:shadow-none active:translate-y-1 transition-all flex items-center justify-center"
+              >
+                {loading ? 'Processing...' : 'Login'}
+              </button>
             </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-400"
-            >
-              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <LogIn className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
-              </span>
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
-          
-          <div className="text-xs text-gray-500 text-center mt-4">
-            Try adm/adm or user/user
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

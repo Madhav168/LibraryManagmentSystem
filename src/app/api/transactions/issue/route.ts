@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     const transaction = await Transaction.create({
       assetId,
       memberId,
+      serialNo: asset.serialNo, // Transfer serialNo from asset
       issueDate,
       dueDate,
       remarks

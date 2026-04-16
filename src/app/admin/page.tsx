@@ -1,48 +1,66 @@
 'use client';
 
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { Settings, ArrowRightLeft, FileText, Users, Database } from 'lucide-react';
 
-export default function AdminHome() {
-  const stats = [
-    { name: 'Maintenance', description: 'Manage members, assets, and users', href: '/admin/maintenance', icon: Settings, color: 'bg-blue-500' },
-    { name: 'Transactions', description: 'Issue and return books/movies', href: '/admin/transactions', icon: ArrowRightLeft, color: 'bg-green-500' },
-    { name: 'Reports', description: 'View system reports and master lists', href: '/admin/reports', icon: FileText, color: 'bg-purple-500' },
+export default function AdminHomePage() {
+  const { user, logout } = useAuth();
+
+  const productDetails = [
+    { from: 'SC(B/M)000001', to: 'SC(B/M)000004', category: 'Science' },
+    { from: 'EC(B/M)000001', to: 'EC(B/M)000004', category: 'Economics' },
+    { from: 'FC(B/M)000001', to: 'FC(B/M)000004', category: 'Fiction' },
+    { from: 'CH(B/M)000001', to: 'CH(B/M)000004', category: 'Children' },
+    { from: 'PD(B/M)000001', to: 'PD(B/M)000004', category: 'Personal Development' },
   ];
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600">Welcome to the Library Management System administration area.</p>
+    <div className="bg-white min-h-[500px] p-6 rounded-lg shadow-sm border border-gray-200">
+      {/* Top Navigation Links from Excel */}
+      <div className="flex justify-between mb-8 text-sm font-medium text-gray-600">
+        <span className="cursor-pointer hover:underline">Chart</span>
+        <h1 className="text-xl font-bold text-gray-900">Admin Home Page</h1>
+        <span className="cursor-pointer hover:underline">Back</span>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {stats.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="group relative flex flex-col items-center overflow-hidden rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg"
-          >
-            <div className={`rounded-full p-3 text-white ${item.color} mb-4`}>
-              <item.icon className="h-8 w-8" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-            <p className="mt-2 text-center text-sm text-gray-500">{item.description}</p>
-          </Link>
-        ))}
+      {/* Main Tab Links */}
+      <div className="flex space-x-12 mb-8 text-lg font-bold border-b pb-4">
+        <Link href="/admin/maintenance" className="hover:text-indigo-600 transition-colors">Maintenance</Link>
+        <Link href="/admin/reports" className="hover:text-indigo-600 transition-colors">Reports</Link>
+        <Link href="/admin/transactions" className="hover:text-indigo-600 transition-colors">Transactions</Link>
       </div>
 
-      <div className="mt-12 rounded-lg bg-white p-6 shadow">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h2>
-        <div className="flex flex-wrap gap-4">
-          <Link href="/admin/maintenance/members" className="flex items-center text-sm text-indigo-600 hover:text-indigo-500">
-            <Users className="mr-1 h-4 w-4" /> Manage Members
-          </Link>
-          <Link href="/admin/maintenance/assets" className="flex items-center text-sm text-indigo-600 hover:text-indigo-500">
-            <Database className="mr-1 h-4 w-4" /> Manage Inventory
-          </Link>
+      <div className="mt-8">
+        <h2 className="text-center text-xl font-bold mb-4">Product Details</h2>
+        <div className="max-w-2xl mx-auto overflow-hidden border-2 border-gray-800">
+          <table className="min-w-full divide-y divide-gray-800">
+            <thead className="bg-gray-50 text-gray-800">
+              <tr className="divide-x divide-gray-800">
+                <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Code No From</th>
+                <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Code No To</th>
+                <th className="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Category</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-800 text-gray-900 font-bold">
+              {productDetails.map((item, idx) => (
+                <tr key={idx} className="divide-x divide-gray-800 hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-3 whitespace-nowrap text-sm">{item.from}</td>
+                  <td className="px-6 py-3 whitespace-nowrap text-sm">{item.to}</td>
+                  <td className="px-6 py-3 whitespace-nowrap text-sm">{item.category}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      <div className="mt-12 flex justify-end">
+        <button 
+          onClick={logout}
+          className="text-lg font-bold text-gray-800 hover:underline flex items-center"
+        >
+          Log Out
+        </button>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (credentials: any) => Promise<void>;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -32,32 +32,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (credentials: any) => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
-    });
+  const login = async (username: string, password: string) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      setUser(data);
-      localStorage.setItem('lib-user', JSON.stringify(data));
-      if (data.role === 'Admin') {
-        router.push('/admin');
-      } else {
-        router.push('/user');
+      if (res.ok) {
+        setUser(data);
+        localStorage.setItem('lib-user', JSON.stringify(data));
+        if (data.role === 'Admin') {
+          router.push('/admin');
+        } else {
+          router.push('/user');
+        }
+        return true;
       }
-    } else {
-      throw new Error(data.error || 'Login failed');
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('lib-user');
-    router.push('/');
+    router.push('/status/logout');
   };
 
   return (

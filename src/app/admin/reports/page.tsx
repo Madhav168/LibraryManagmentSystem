@@ -1,10 +1,9 @@
-import ReportViewer from '@/components/ReportViewer';
+import ReportSystem from '@/components/ReportSystem';
 
 export default function AdminReports() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Reports Dashboard</h1>
-      <ReportViewer />
+    <div className="max-w-6xl mx-auto py-8">
+      <ReportSystem />
     </div>
   );
 }
