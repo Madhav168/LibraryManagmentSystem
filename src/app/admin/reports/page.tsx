@@ -1,0 +1,10 @@
+import ReportViewer from '@/components/ReportViewer';
+
+export default function AdminReports() {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900">Reports Dashboard</h1>
+      <ReportViewer />
+    </div>
+  );
+}

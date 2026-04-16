@@ -1,0 +1,852 @@
+Sheets: ['sp login', 'customers list', 'Customer detail', 'Ledger Info', 'Againg', 'Indent Book', 'Schme', 'status', 'Product List', 'Travel Reportlocal', 'T.A D.A', 'Sale person Application', 'Farmer Demo', 'Dealers Application', 'Instructions', 'Chart', 'Admin Login', 'User Login', 'Admin Home Page', 'User Home Page', 'Transactions', 'Book Available', 'Search Results', 'Book Issue', 'Return Book', 'Pay Fine', 'Reports ', 'Master List of Books', 'Master List of Movies', 'Master List of Memberships', 'Active Issues ', 'Overdue Returns', 'Issue Requests', 'Maintenance ', 'Add Membership', 'Update Membership', 'Add Book', 'Update Book', 'User Management', 'Cancel', 'Confirmation', 'Sheet1', 'Log Out']
+
+====================
+Sheet: sp login
+====================
+                       Unnamed: 2 Unnamed: 3 Unnamed: 4
+5  KRISHI RASYAN EXPORTS PVT. LTD        NaN        NaN
+7                             NaN    USER ID    HYD-118
+9                             NaN        PWD     ******
+
+Shape: (3, 3)
+
+====================
+Sheet: customers list
+====================
+        Unnamed: 1                       Unnamed: 2
+0              NaN   Krishi Rasayan Export Pvt Ltd.
+1           Target                       DR-AP-0005
+4             Code                          HYD-118
+5             Name        Karnati Chandrahasa Reddy
+7   Customer  List                              NaN
+8           Search                              NaN
+9             Code                             Name
+10      DR-AP-0001  Andhra Fertilizers & Pesticides
+11      DR-AP-0002      Bhargavi Seeds & Pesticides
+12      DR-AP-0003              Ciri Agro Chemicals
+13      DR-AP-0004       Dwaraka Seeds & Pesticides
+
+Shape: (11, 2)
+
+====================
+Sheet: Customer detail
+====================
+            Unnamed: 1                       Unnamed: 2
+1                  NaN   Krishi Rasayan Export Pvt Ltd.
+2                 Code                       DR-AP-0001
+3                 Name  Andhra Fertilizers & Pesticides
+4              address  D.No.35 & 36, R.T.C. Bus Stand 
+7             phone no                       9540555021
+8   Avl. Nor. Cr. Lmt.                           399499
+9   Avl. Adv. Cr. Lmt.                                0
+10        Credit Limit                           400000
+11       Last payment.                             4685
+12             Balance                           150000
+13         Outstanding                              NaN
+
+Shape: (11, 2)
+
+====================
+Sheet: Ledger Info
+====================
+              Unnamed: 0           Unnamed: 1          Unnamed: 2 Unnamed: 3 Unnamed: 4
+0                    NaN          Ledger Info                 NaN        NaN        NaN
+2                   From                  NaN         Customer ID        NaN        NaN
+4                     To                  NaN                 NaN        NaN        NaN
+7                Voucher                 Date             Invoice     Amount    Balance
+8    PSI-GUN-T-1011-0314  2010-06-21 00:00:00                 NaN      314.5          0
+9     TR-REV-1314-017432  2010-06-21 00:00:00                 NaN     -314.5          0
+10  PSI-GUN-T-1011-0314.  2010-06-21 00:00:00                 NaN      314.5          0
+11  BR-IC1331-1314012664  2013-08-19 00:00:00                 NaN    -150000          0
+12    PJV-AP-1314-000635  2013-09-30 00:00:00                 NaN     150000          0
+13    PJV-AP-1314-000739  2013-10-19 00:00:00                 NaN      -5000          0
+14    PJV-AP-1314-000740  2013-10-19 00:00:00                 NaN       5000          0
+15    PJV-AP-1314-000741  2013-10-19 00:00:00                 NaN      -5000          0
+16    PJV-AP-1415-011692  2014-04-01 00:00:00                 NaN     4685.5          0
+17    PJV-AP-1415-010444  2015-03-31 00:00:00                 NaN     4685.5          0
+18    PJV-AP-1415-011057  2015-03-31 00:00:00                 NaN    -4685.5          0
+19    PDN-AP-1516-000217  2015-05-31 00:00:00  PDN-AP-1516-000217        501        501
+
+Shape: (16, 5)
+
+====================
+Sheet: Againg
+====================
+         Code Unnamed: 2                             Name Unnamed: 4 Unnamed: 5 Unnamed: 6
+0  DR-AP-0001        NaN  Andhra Fertilizers & Pesticides        NaN        NaN        NaN
+1       Aging       0-30                            31-60      61-90     91-120    121-180
+2         Gen        NaN                              NaN        NaN        NaN        NaN
+3   life line        NaN                              NaN        NaN        NaN        NaN
+4   Slifeline        NaN                              NaN        NaN        NaN        NaN
+5       other        NaN                              NaN        NaN        NaN        NaN
+
+Shape: (6, 6)
+
+====================
+Sheet: Indent Book
+====================
+   Unnamed: 1         Unnamed: 2 Unnamed: 3   Unnamed: 4  Unnamed: 5
+1      Search            AGROZIM        NaN          NaN         NaN
+5        Code               Name      Price          Qty       Schme
+6   FGMFN0018  AGROZIM 100X50 GM         12          NaN         NaN
+7   FGMFN0019  AGROZIM 50X100 GM         30          NaN  QD1516-004
+8   FGMFN0020  AGROZIM 20X250 GM         23          NaN         NaN
+9   FGMFN0021  AGROZIM 20X500 GM         34          NaN         NaN
+10  FGMFN0022  AGROZIM 20X500 GM         16          NaN         NaN
+12        NaN             SUBMIT        NaN  SCHEME LIST         NaN
+
+Shape: (8, 5)
+
+====================
+Sheet: Schme
+====================
+    Unnamed: 2                          Unnamed: 3 Unnamed: 5
+2         Code                         description        NaN
+3   QD1516-004  qty must be 10000 with in 60 days.        NaN
+7   LD1516-006         lifting gain with in 7 days        NaN
+14         NaN                              ignore     insert
+
+Shape: (4, 3)
+
+====================
+Sheet: status
+====================
+  Unnamed: 1      Unnamed: 2    Unnamed: 3 Unnamed: 5 Unnamed: 7
+1        NaN             NaN  order status        NaN        NaN
+4       Book             NaN        indent       Bill   Dispatch
+6    order 1  si-ap-1415-001           NaN        NaN        NaN
+7    order 2  si-ap-1415-003           NaN        NaN        NaN
+
+Shape: (4, 5)
+
+====================
+Sheet: Product List
+====================
+             Unnamed: 1             Unnamed: 2 Unnamed: 3
+1  Godown Products list                    NaN        NaN
+2                   NaN  KRISHI RASAYAN GUNTUR        NaN
+4                  Code                   Name      Price
+5             FGMFN0018      AGROZIM 100X50 GM         12
+6             FGMFN0019      AGROZIM 50X100 GM         30
+7             FGMFN0020      AGROZIM 20X250 GM         23
+8             FGMFN0021      AGROZIM 20X500 GM         34
+9             FGMFN0022      AGROZIM 20X500 GM         16
+
+Shape: (8, 3)
+
+====================
+Sheet: Travel Reportlocal
+====================
+            Unnamed: 0            Unnamed: 1    Unnamed: 2    Unnamed: 3                       Unnamed: 4 Unnamed: 5
+0                  NaN  Today Travel Report            NaN           NaN                              NaN        NaN
+2                  NaN         Insert report           NaN           NaN                              NaN        NaN
+4                 date                  time          From            to                             Name   distance
+5  2022-12-09 00:00:00              10.00 am          home  customer add  Andhra Fertilizers & Pesticides         30
+6  2022-12-09 00:00:00                 11.am  customer add  customer add      Bhargavi Seeds & Pesticides         20
+7  2022-12-09 00:00:00                  7.pm  customer add      home add                              NaN         50
+8                  NaN                   NaN           NaN           NaN                            Total        100
+
+Shape: (7, 6)
+
+====================
+Sheet: T.A D.A
+====================
+            Unnamed: 0     Unnamed: 1         Unnamed: 2     Unnamed: 3 Unnamed: 4 Unnamed: 5       Unnamed: 6          Unnamed: 7 Unnamed: 8     Unnamed: 9 Unnamed: 10 Unnamed: 11 Unnamed: 13 Unnamed: 14 Unnamed: 15 Unnamed: 16 Unnamed: 17 Unnamed: 18       Unnamed: 20            Unnamed: 21
+1                 Date  Log Book (KM)  Time of Departure  Visited Place  Cust Code  Cust Name  Time of Arrival  Journery KM Coverd        T.A            NaN  Conveyance          DA   Telephone      Hotal       Repair         NaN         NaN      Others  Senioor Approval  Supporting Attachment
+2                  NaN            NaN                NaN            NaN        NaN        NaN              NaN             Vehicle        NaN  Bus/Train Amt         NaN         NaN         NaN         NaN         Amt        Taxt          KM         NaN               NaN                    NaN
+3  2015-10-01 00:00:00          27802               text           text    look up    look up             text                 150        NaN            NaN         NaN    Half Day         NaN         NaN       15000     look up       28015         NaN               yes                    NaN
+4  2015-10-02 00:00:00          27801                NaN            NaN        NaN        NaN              NaN                 140        NaN            NaN         NaN    Full Day         NaN         NaN         NaN         NaN         NaN         NaN               yes                    NaN
+5  2015-10-03 00:00:00            NaN                NaN            NaN        NaN        NaN              NaN                 130        NaN            NaN         NaN         NaN         NaN         NaN         NaN         NaN         NaN         NaN               yes                    NaN
+
+Shape: (5, 20)
+
+====================
+Sheet: Sale person Application
+====================
+          Unnamed: 0                                                                                      Unnamed: 1    Unnamed: 2
+0   Sale Person Form                                                                                             NaN           NaN
+2             1 Page                                                                    Login from User and Password           NaN
+3             2 Page                                                        All customer list related to Sale person  Non Editable
+4                NaN                                                            Customer list should be hierarchical  SH,ASM,AM,SP
+5                NaN                                                                                          Target           NaN
+6                NaN                                          list only those customer which target given by seniors           NaN
+8             3 page                                                 Customer Detail (Only Active Customer and show)  Non Editable
+9                NaN                                                                                            Code           NaN
+10               NaN                                                                                            Name           NaN
+11               NaN                                                                                         address           NaN
+12               NaN                                                                                        phone no           NaN
+13               NaN                                                                                    Credit Limit           NaN
+14               NaN                                                                            Advance Credit Limit           NaN
+15               NaN                                                                                         Balance           NaN
+16               NaN                                                                                     Outstanding           NaN
+17               NaN                                                                           Avail. Nor. Cr. Limit           NaN
+18               NaN                                                                           Avail. Adv. Cr. Limit           NaN
+19               NaN                                                                                    Last Payment           NaN
+22            4 page                                                                           Info Ledger (Last 30)  Non Editable
+23               NaN                                                            Select the customer  (Search option)           NaN
+24               NaN                                                                                    Select date            NaN
+25               NaN                                                                                     Show ledger           NaN
+27                 4                                                                                          Againg           NaN
+28               NaN                                                                       Item Category Wise againg           NaN
+30            5 page                                                                                     Book Indent           NaN
+31               NaN                                                                     Select Customer from 1 page           NaN
+32               NaN                                                        select Products (Search option be there)           NaN
+33               NaN                                                                 Products shown by Category wise           NaN
+34               NaN                                         Only products related to there contact godown are shown           NaN
+35               NaN                                                            Price should be mention on the list.           NaN
+36               NaN                                                       Products Under Scheme should be higlights           NaN
+37               NaN                                                               After selecting multiple products           NaN
+38               NaN                                                                                     book indent           NaN
+39               NaN                                                                      select scheme if avaliable           NaN
+42            7 page                                                                                         Scheme            NaN
+43               NaN                                    All Scheme  detail should be here as related to there branch           NaN
+45            6 page                                                                                         Status            NaN
+46               NaN                                                                    Update the status of Indent            NaN
+47               NaN                                                             booked or not , go to invoice stage           NaN
+51            8 page                                                                            Godown Products list           NaN
+52               NaN                                All products related to Godown Must be present with stock detial           NaN
+53                                                                      User can see at least 3 nearet godown stock            NaN
+55            9 page                                                                                  Travel Report            NaN
+56               NaN                                                          all users can see there travel report            NaN
+57               NaN                                                                                 Customer visit            NaN
+58               NaN                                                                     all distance travel by them           NaN
+59               NaN                                                                      place name on hourly bases           NaN
+62              Note                                                                                             NaN           NaN
+63                 1                                                           User login can configure from backend           NaN
+64                 2                                                   Customer update will be run  2 times in a day           NaN
+65                 3                                                        Price update should be run hourly bases.           NaN
+66                 4                                           Indent will sync hourly bases to server of vice versa           NaN
+67                 5  after visit on customer site user will metion Reason status may me collection or other perpose           NaN
+68                 6                       seniors can assign the customer target visit though tab or backend pannel           NaN
+69                 7                               daily Travel Mail detail should be go to reporting senior and SP.           NaN
+70                 8                                   T.A D.A deprt. Can access the travel report from the backend.           NaN
+
+Shape: (56, 3)
+
+====================
+Sheet: Farmer Demo
+====================
+   Farmer Demo Form                                                                                    Unnamed: 1    Unnamed: 2
+1            1 Page                                                                  Login from User and Password           NaN
+2            2 Page                                                                       Add Farmers Information  Non Editable
+3               NaN                                                                                          Name           NaN
+4               NaN                                                                                 Father's Name           NaN
+5               NaN                                                                                    Mobile No.           NaN
+6               NaN                                                                                 Adhar Card No           NaN
+7               NaN                                                                                Farmer Card No           NaN
+8               NaN                                                                                      Email ID           NaN
+9               NaN                                                                                   Street name           NaN
+10              NaN                                                                                          City           NaN
+11              NaN                                                                                Country/region           NaN
+12              NaN                                                                                          Site           NaN
+13              NaN                                                                                  Village Name           NaN
+14              NaN                                                                                   Tehsil Name           NaN
+15              NaN                                                                                 District Name           NaN
+16              NaN                                                                              Anniversary Date           NaN
+17              NaN                                                                                    Birth date           NaN
+18              NaN                                                                             Land Disciription           NaN
+19              NaN                                                                               Land Aread Unit           NaN
+21         3rd page                                                                                   Demo Detail           NaN
+22              NaN                                                                                       Seasion        select
+23              NaN                                                                                demo crop name        select
+24              NaN                                                                               CropDescription        select
+25              NaN                                                                                    Crop Stage           NaN
+26              NaN                                                                                       Purpose        select
+27              NaN                                                                            PurposeDescription           NaN
+28              NaN                                                                                    Product Id        select
+29              NaN                                                                                  Product Name        select
+30              NaN                                                                                         brand        select
+31              NaN                                                                                   Description           NaN
+32              NaN                                                                                     Area Unit           NaN
+33              NaN                                                                                     Issue Qty           NaN
+34              NaN                                                                                   Dosage Unit           NaN
+35              NaN                                                                                   Item number        select
+36              NaN                                                                                     Item name        select
+37              NaN                                                                                  Item Unit Id           NaN
+38              NaN                                                                                 Item Used Qty           NaN
+39              NaN                                                                              Remark By Farmer           NaN
+40              NaN                                                                           Remarks By Employee           NaN
+41              NaN                                                                                                         NaN
+42        4 th page                                                                           Document Collection  Non Editable
+43              NaN                                                  Upload the pictures of products farmer field           NaN
+44              NaN                                                                           Adhar Card document           NaN
+45              NaN                                                                          Farmer Card document           NaN
+46              NaN                                                                           Product Use Photo 1           NaN
+47              NaN                                                                           Product Use Photo 2           NaN
+48              NaN                                                                           Product Use Photo 3           NaN
+49              NaN                                                                           Product Use Photo 4           NaN
+50        5 th page                                                                                       Status            NaN
+51              NaN                                                                  farmer detail updated status           NaN
+52              NaN                                                                 Remaning Stock Detail in Hand           NaN
+54        6 th page                                                                                Travel Report            NaN
+55              NaN                                                        all users can see there travel report            NaN
+56              NaN                                                                                 Farmer visit            NaN
+57              NaN                                                                   all distance travel by them           NaN
+58              NaN                                                                    place name on hourly bases           NaN
+60             Note                                                                                           NaN           NaN
+61                1                                                         User login can configure from backend           NaN
+62                2                                                                Farmer unique id auto genrated           NaN
+63                3                                                   Farmer update will be run  1 times in a day           NaN
+64                4                                       Picutre update should be run daily  bases with compress           NaN
+65                5                                                          Yellow marketed field must be field.           NaN
+66                6  after visit on Farmer site user will metion Reason status may me collection or other perpose           NaN
+67                7                             daily Travel Mail detail should be go to reporting senior and SP.           NaN
+68                8                                 T.A D.A deprt. Can access the travel report from the backend.           NaN
+
+Shape: (65, 3)
+
+====================
+Sheet: Dealers Application
+====================
+   Dealers Application                                                               Unnamed: 1    Unnamed: 2
+1               1 Page             Login from User and Password (user can change his password )           NaN
+2               2 page                                                         Customer Detail   Non Editable
+3                  NaN                                                                     Code           NaN
+4                  NaN                                                                     Name           NaN
+5                  NaN                                                                  address           NaN
+6                  NaN                                                                 phone no           NaN
+7                  NaN                                                             Credit Limit           NaN
+8                  NaN                                                     Advance Credit Limit           NaN
+9                  NaN                                                                  Balance           NaN
+10                 NaN                                                              Outstanding           NaN
+11                 NaN                                                    Avail. Nor. Cr. Limit           NaN
+12                 NaN                                                    Avail. Adv. Cr. Limit           NaN
+13                 NaN                                                             Last Payment           NaN
+15              3 page                                                    Info Ledger (Last 30)  Non Editable
+16                 NaN                                     Select the customer  (Search option)           NaN
+17                 NaN                                                             Select date            NaN
+18                 NaN                                                              Show ledger           NaN
+20              4 page                                                              Book Indent           NaN
+21                 NaN                                              Select Customer from 1 page           NaN
+22                 NaN                                 select Products (Search option be there)           NaN
+23                 NaN                                          Products shown by Category wise           NaN
+24                 NaN                                     Price should be mention on the list.           NaN
+25                 NaN                                Products Under Scheme should be higlights           NaN
+26                 NaN                                        After selecting multiple products           NaN
+27                 NaN                                                              book indent           NaN
+28                 NaN                                               select scheme if avaliable           NaN
+30              5 page                                                                  Status            NaN
+31                 NaN                                             Update the status of Indent            NaN
+32                 NaN                                      booked or not , go to invoice stage           NaN
+34              6 page                                                                  Scheme            NaN
+35                 NaN             All Scheme  detail should be here as related to there branch           NaN
+36                Note                                                                      NaN           NaN
+37                   1  User login can configure from backend but user can change it's password           NaN
+38                   2                            Customer update will be run  2 times in a day           NaN
+39                   3                                 Price update should be run hourly bases.           NaN
+40                   4                    Indent will sync hourly bases to server of vice versa           NaN
+
+Shape: (36, 3)
+
+====================
+Sheet: Instructions
+====================
+    Instructions                                                                                                                                                             Unnamed: 1
+0            1.0                                                                      The chart shows the overall flow and pages/screens in the application - Library Management System
+1            2.0                                                                         Maintenance module is mandatory to be developed to create the reports and transactions modules
+2            3.0                                                                                                                              Basic formatting on screen is acceptable 
+3            4.0                                                      Chart link is on all pages to help navigate the user to the chart. It is not required in the working application.
+4            5.0                                                                                                                               Radio buttons - only one can be selected
+5            6.0                                                                                                               Checkbox - checked implies yes and unchecked implies no.
+6            7.0                                                                                  passwords need to be hidden when typed on the login pages in the working application.
+7            8.0                                                                                                                Admin can access maintenance, reports and transactions.
+8            9.0                                                                                   User cannot access maintenance. However user has access to reports and transactions.
+9           10.0                                                                                                                                                   Validations on forms
+10           NaN                                                                                                                                                         Book Available
+11           NaN                                                                                           One of the text box or drop down to be filled in before submitting the form.
+12           NaN                                                                                  If none selected - user must get a message on the same page to make a valid selection
+13           NaN                                                                                                                                                        Search Results 
+14           NaN                                                                 Against the available books, in the row, the last column will have a radio button that is selectable. 
+15           NaN                                                                                                                                                             Book Issue
+16           NaN                                                                                                                                                  Name of book required
+17           NaN                                                                                                   Name of author will get automatically populated and is non editable.
+18           NaN                                                                                                                              Issue Date - cannot be lesser than today.
+19           NaN                           Return Date - automatically populated with a date 15 days ahead. It can be edited to a date earlier than that. But not greater than 15 days.
+20           NaN                                                                                                                                              Remarks is non-mandatory.
+21           NaN                                          If the form is submitted without these details, an error is displayed on the page , to make a valid selection of the feature.
+22           NaN                                                                                                                                                            Return Book
+23           NaN                                                                                                                                                Name of Book - required
+24           NaN                                                                                                                  Author name - automically populated and non editable.
+25           NaN                                                                                                                             Serial No of the book is a mandatory field
+26           NaN                                                                                                             Issue Date - is automatically populated - and non editable
+27           NaN                           Return Date - is automatically populated to the date selected while issuing the book. It can be edited to a date earlier or later than that.
+28           NaN                                           If the form is submitted without these details, an error is displayed on the page, to make a valid selection of the feature.
+29           NaN                                                    With the confirm option used the user is taken to the Pay Fine page, irrespective of whether fine is there or not. 
+30           NaN                                                                                                                                                               Fine Pay
+31           NaN                                                                                                            All the fields are populated except - Fine Paid and Remarks
+32           NaN                                                    If there is no calculated fine, then the user can press confirm and the transaction will be successfully completed.
+33           NaN                                             For a pending fine, the paid fine check box needs to be selected before the user can complete the return book transaction.
+34           NaN  If the form is submitted without these details, an error is displayed on the page, to make a valid selection of the feature. And book will not be returned till then.
+35           NaN                                                                                                                                                         Add Membership
+36           NaN                                      All fields mandatory and the user needs to select one option - 6 months or 1 year or 2 years . By default - 6 months is selected.
+37           NaN                                                                                                                                                      Update Membership
+38           NaN                       Membership Number is mandatory, based on which the rest of the fields are populated. User can extend their membership or cancel their membership
+39           NaN                                                                                                              By default - six months extension of membership selected.
+40           NaN                                                                                                                                                               Add Book
+41           NaN                                                                                                    One of the options movie or book to be selected. By default - book.
+42           NaN                                                                                                                                                  All fields mandatory.
+43           NaN                                                                    An error message to be thrown on the page if user does not enter all details and confirms the form.
+44           NaN                                                                                                                                                            Update Book
+45           NaN                                                                                                    One of the options movie or book to be selected. By default - book.
+46           NaN                                                                                                                                                  All fields mandatory.
+47           NaN                                                                    An error message to be thrown on the page if user does not enter all details and confirms the form.
+48           NaN                                                                                                                                                        User Management
+49           NaN                                                                                              One of the options new user or existing to be selected. By default - new.
+50           NaN                                                                                                                                                      Name is mandatory
+51           NaN                                                                                                                             Incase of any assumptions please highlight
+52           NaN                                                                                                                                         If not clear - please clarify 
+
+Shape: (53, 2)
+
+====================
+Sheet: Chart
+====================
+                                                                                         Information:
+0                                                                                   2 types of login 
+1                                                                 User - user login and user homepage
+2                                                              Admin - admin login and admin homepage
+4                                       The chart shows login and homepage links for the admin user. 
+5  The normal user can login to the application, with access to the Reports and Transactions modules.
+
+Shape: (5, 1)
+
+====================
+Sheet: Admin Login
+====================
+      Chart                 Unnamed: 1 Unnamed: 2
+2       NaN  Library Management System        NaN
+4   User ID                        adm        NaN
+6  Password                        adm        NaN
+8       NaN                        NaN      Login
+
+Shape: (4, 3)
+
+====================
+Sheet: User Login
+====================
+      Chart                 Unnamed: 1 Unnamed: 2
+2       NaN  Library Management System        NaN
+4   User ID                       user        NaN
+6  Password                       user        NaN
+8       NaN                        NaN      Login
+
+Shape: (4, 3)
+
+====================
+Sheet: Admin Home Page
+====================
+             Chart Admin Home Page            Unnamed: 2     Back
+0     Maintenance          Reports          Transactions      NaN
+1  Product Details             NaN                   NaN      NaN
+2     Code No From      Code No To              Category      NaN
+3    SC(B/M)000001   SC(B/M)000004               Science      NaN
+4    EC(B/M)000001   EC(B/M)000004             Economics      NaN
+5    FC(B/M)000001   FC(B/M)000004               Fiction      NaN
+6    CH(B/M)000001   CH(B/M)000004              Children      NaN
+7    PD(B/M)000001   PD(B/M)000004  Personal Development      NaN
+9              NaN             NaN                   NaN  Log Out
+
+Shape: (9, 4)
+
+====================
+Sheet: User Home Page
+====================
+             Chart      Home Page            Unnamed: 2     Back
+0          Reports            NaN          Transactions      NaN
+1  Product Details            NaN                   NaN      NaN
+2     Code No From     Code No To              Category      NaN
+3    SC(B/M)000001  SC(B/M)000004               Science      NaN
+4    EC(B/M)000001  EC(B/M)000004             Economics      NaN
+5    FC(B/M)000001  FC(B/M)000004               Fiction      NaN
+6    CH(B/M)000001  CH(B/M)000004              Children      NaN
+7    PD(B/M)000001  PD(B/M)000004  Personal Development      NaN
+9              NaN            NaN                   NaN  Log Out
+
+Shape: (9, 4)
+
+====================
+Sheet: Transactions
+====================
+                Chart     Home                                                       Unnamed: 4
+0  Is book available?      NaN  Note: If logged in as Admin - home will take to Admin Home Page
+1         Issue book?      NaN         If logged in as user - home will take to  User Home Page
+2        Return book?      NaN                                                              NaN
+3           Pay Fine?  Log Out                                                              NaN
+
+Shape: (4, 3)
+
+====================
+Sheet: Book Available
+====================
+                Chart       Transactions Unnamed: 2     Home                                                       Unnamed: 5
+0  Is book available?  Book Availability        NaN      NaN                                                              NaN
+1         Issue book?    Enter Book Name  Drop Down      NaN  Note: If logged in as Admin - home will take to Admin Home Page
+2        Return book?       Enter Author  Drop Down      NaN         If logged in as user - home will take to  User Home Page
+3           Pay Fine?                NaN        NaN      NaN                                                              NaN
+6                 NaN                NaN        NaN  Log Out                                                              NaN
+
+Shape: (5, 5)
+
+====================
+Sheet: Search Results
+====================
+                 Chart       Transactions                                                       Unnamed: 2     Unnamed: 3 Unnamed: 4                      Home
+0   Is book available?  Book Availability                                                              NaN            NaN        NaN                       NaN
+1          Issue book?          Book Name                                                      Author Name  Serial Number  Available  Select to issue the book
+2         Return book?                  A                                                      Author Name  Serial Number          Y              radio button
+3            Pay Fine?                  A                                                      Author Name            NaN          Y              radio button
+4                  NaN                  A                                                      Author Name            NaN          Y              radio button
+5                  NaN                  A                                                      Author Name            NaN          N                       NaN
+6                  NaN                NaN                                                              NaN            NaN        NaN                   Log Out
+9                  NaN                NaN  Note: If logged in as Admin - home will take to Admin Home Page            NaN        NaN                       NaN
+10                 NaN                NaN         If logged in as user - home will take to  User Home Page            NaN        NaN                       NaN
+
+Shape: (9, 6)
+
+====================
+Sheet: Book Issue
+====================
+                Chart     Transactions           Unnamed: 2           Home                                                       Unnamed: 5
+0  Is book available?       Book Issue                  NaN            NaN                                                              NaN
+1         Issue book?  Enter Book Name            Drop Down            NaN  Note: If logged in as Admin - home will take to Admin Home Page
+2        Return book?     Enter Author            Text box             NaN         If logged in as user - home will take to  User Home Page
+3           Pay Fine?       Issue Date             Calendar            NaN                                                              NaN
+4                 NaN      Return Date             Calendar            NaN                                                              NaN
+5                 NaN          Remarks  Text area/Text box   Non Mandatory                                                              NaN
+7                 NaN              NaN                  NaN        Log Out                                                              NaN
+
+Shape: (7, 5)
+
+====================
+Sheet: Return Book
+====================
+                Chart     Transactions     Unnamed: 2           Home                                                       Unnamed: 5
+0  Is book available?      Return Book            NaN            NaN                                                              NaN
+1         Issue book?  Enter Book Name      Drop Down            NaN  Note: If logged in as Admin - home will take to Admin Home Page
+2        Return book?     Enter Author      Text Area            NaN         If logged in as user - home will take to  User Home Page
+3           Pay Fine?        Serial No      Drop Down     Mandatory                                                               NaN
+4                 NaN       Issue Date       Text Box            NaN                                                              NaN
+5                 NaN      Return Date       Calendar            NaN                                                              NaN
+7                 NaN          Remarks  Text Box/area  Non Mandatory                                                              NaN
+9                 NaN              NaN            NaN        Log Out                                                              NaN
+
+Shape: (8, 5)
+
+====================
+Sheet: Pay Fine
+====================
+                 Chart        Transactions Unnamed: 2                  Home                                                       Unnamed: 5
+0   Is book available?           Pay Fine         NaN                   NaN  Note: If logged in as Admin - home will take to Admin Home Page
+1          Issue book?     Enter Book Name   Text Box                   NaN         If logged in as user - home will take to  User Home Page
+2         Return book?        Enter Author   Text Box                   NaN                                                              NaN
+3            Pay Fine?           Serial No   Text Box                   NaN                                                              NaN
+4                  NaN          Issue Date   Calendar                   NaN                                                              NaN
+5                  NaN         Return Date   Calendar                   NaN                                                              NaN
+6                  NaN  Actual Return Date   Calendar                   NaN                                                              NaN
+7                  NaN     Fine Calculated   Text Box       by default zero                                                              NaN
+8                  NaN           Fine Paid   Checkbox  by default unchecked                                                              NaN
+9                  NaN             Remarks  text area         Non Mandatory                                                              NaN
+11                 NaN                 NaN        NaN               Log Out                                                              NaN
+
+Shape: (11, 5)
+
+====================
+Sheet: Reports 
+====================
+                        Chart Unnamed: 3                                                       Unnamed: 5
+0           Available Reports        NaN                                                              NaN
+1        Master List of Books        NaN  Note: If logged in as Admin - home will take to Admin Home Page
+2       Master List of Movies        NaN         If logged in as user - home will take to  User Home Page
+3  Master List of Memberships        NaN                                                              NaN
+4               Active Issues        NaN                                                              NaN
+5             Overdue returns        NaN                                                              NaN
+6      Pending Issue Requests    Log Out                                                              NaN
+
+Shape: (7, 3)
+
+====================
+Sheet: Master List of Books
+====================
+                                                              Chart                                          Home      Unnamed: 4    Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8         Unnamed: 9
+0                                              Master List of Books                          Master List of Books             NaN           NaN        NaN        NaN        NaN                NaN
+1                                             Master List of Movies                                    Serial No   Name of Book    Author Name   Category      Status       Cost  Procurement Date 
+2                                        Master List of Memberships                                           NaN             NaN           NaN        NaN        NaN        NaN                NaN
+3                                                     Active Issues                                           NaN             NaN           NaN        NaN        NaN        NaN                NaN
+4                                                   Overdue returns                                           NaN             NaN           NaN        NaN        NaN        NaN                NaN
+5                                                    Issue Requests                                           NaN             NaN           NaN        NaN        NaN        NaN                NaN
+6                                                               NaN                                       Log Out             NaN           NaN        NaN        NaN        NaN                NaN
+10  Note: If logged in as Admin - home will take to Admin Home Page                                           NaN             NaN           NaN        NaN        NaN        NaN                NaN
+11         If logged in as user - home will take to  User Home Page                                           NaN             NaN           NaN        NaN        NaN        NaN                NaN
+19                                                              NaN                                             C             NaN           NaN        NaN        NaN        NaN                NaN
+
+Shape: (10, 8)
+
+====================
+Sheet: Master List of Movies
+====================
+                                                              Chart                                          Home     Unnamed: 4    Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8         Unnamed: 9
+0                                              Master List of Books                         Master List of Movies            NaN           NaN        NaN        NaN        NaN                NaN
+1                                             Master List of Movies                                    Serial No   Name of Movie  Author Name   Category      Status      Cost   Procurement Date 
+2                                        Master List of Memberships                                           NaN            NaN           NaN        NaN        NaN        NaN                NaN
+3                                                     Active Issues                                           NaN            NaN           NaN        NaN        NaN        NaN                NaN
+4                                                   Overdue returns                                           NaN            NaN           NaN        NaN        NaN        NaN                NaN
+5                                                    Issue Requests                                           NaN            NaN           NaN        NaN        NaN        NaN                NaN
+6                                                               NaN                                       Log Out            NaN           NaN        NaN        NaN        NaN                NaN
+10  Note: If logged in as Admin - home will take to Admin Home Page                                           NaN            NaN           NaN        NaN        NaN        NaN                NaN
+11         If logged in as user - home will take to  User Home Page                                           NaN            NaN           NaN        NaN        NaN        NaN                NaN
+19                                                              NaN                                             C            NaN           NaN        NaN        NaN        NaN                NaN
+
+Shape: (10, 8)
+
+====================
+Sheet: Master List of Memberships
+====================
+                                                              Chart                  Unnamed: 3      Unnamed: 4      Unnamed: 5       Unnamed: 6      Unnamed: 7                Unnamed: 8              Unnamed: 9               Unnamed: 10                  Home
+0                                              Master List of Books  List of Active Memberships             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+1                                             Master List of Movies               Membership Id  Name of Member  Contact Number  Contact Address  Aadhar Card No  Start Date of Membership  End Date of Membership  Status (Active/Inactive)  Amount Pending(Fine)
+2                                        Master List of Memberships                         NaN             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+3                                                     Active Issues                         NaN             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+4                                                   Overdue returns                         NaN             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+5                                                    Issue Requests                         NaN             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+6                                                               NaN                     Log Out             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+10  Note: If logged in as Admin - home will take to Admin Home Page                         NaN             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+11         If logged in as user - home will take to  User Home Page                         NaN             NaN             NaN              NaN             NaN                       NaN                     NaN                       NaN                   NaN
+
+Shape: (9, 10)
+
+====================
+Sheet: Active Issues 
+====================
+                                                              Chart                                          Home          Unnamed: 4     Unnamed: 5     Unnamed: 6      Unnamed: 7
+0                                              Master List of Books                                 Active Issues                 NaN            NaN            NaN             NaN
+1                                             Master List of Movies                          Serial No Book/Movie  Name of Book/Movie  Membership Id  Date of Issue  Date of return
+2                                        Master List of Memberships                                           NaN                 NaN            NaN            NaN             NaN
+3                                                     Active Issues                                           NaN                 NaN            NaN            NaN             NaN
+4                                                   Overdue returns                                           NaN                 NaN            NaN            NaN             NaN
+5                                                    Issue Requests                                           NaN                 NaN            NaN            NaN             NaN
+6                                                               NaN                                       Log Out                 NaN            NaN            NaN             NaN
+9   Note: If logged in as Admin - home will take to Admin Home Page                                           NaN                 NaN            NaN            NaN             NaN
+10         If logged in as user - home will take to  User Home Page                                           NaN                 NaN            NaN            NaN             NaN
+19                                                              NaN                                             C                 NaN            NaN            NaN             NaN
+
+Shape: (10, 6)
+
+====================
+Sheet: Overdue Returns
+====================
+                         Chart                                          Home    Unnamed: 4     Unnamed: 5     Unnamed: 6      Unnamed: 7         Unnamed: 8
+0         Master List of Books                               Overdue Returns           NaN            NaN            NaN             NaN                NaN
+1        Master List of Movies                                Serial No Book  Name of Book  Membership Id  Date of Issue  Date of return  Fine Calculations
+2   Master List of Memberships                                           NaN           NaN            NaN            NaN             NaN                NaN
+3                Active Issues                                           NaN           NaN            NaN            NaN             NaN                NaN
+4              Overdue returns                                           NaN           NaN            NaN            NaN             NaN                NaN
+5               Issue Requests                                           NaN           NaN            NaN            NaN             NaN                NaN
+6                          NaN                                       Log out           NaN            NaN            NaN             NaN                NaN
+19                         NaN                                             C           NaN            NaN            NaN             NaN                NaN
+
+Shape: (8, 7)
+
+====================
+Sheet: Issue Requests
+====================
+                         Chart                                                          Reports                                          Home          Unnamed: 4       Unnamed: 5              Unnamed: 6
+0         Master List of Books                                                              NaN                                Issue Requests                 NaN              NaN                     NaN
+1        Master List of Movies                                                              NaN                                 Membership Id  Name of Book/Movie  Requested Date   Request Fulfilled Date
+2   Master List of Memberships                                                              NaN                                           NaN                 NaN              NaN                     NaN
+3                Active Issues                                                              NaN                                           NaN                 NaN              NaN                     NaN
+4              Overdue returns                                                              NaN                                           NaN                 NaN              NaN                     NaN
+5               Issue Requests                                                              NaN                                           NaN                 NaN              NaN                     NaN
+6                          NaN                                                              NaN                                       Log out                 NaN              NaN                     NaN
+12                         NaN  Note: If logged in as Admin - home will take to Admin Home Page                                           NaN                 NaN              NaN                     NaN
+13                         NaN         If logged in as user - home will take to  User Home Page                                           NaN                 NaN              NaN                     NaN
+
+Shape: (9, 6)
+
+====================
+Sheet: Maintenance 
+====================
+             Chart Unnamed: 1     Home
+0     Housekeeping        NaN      NaN
+1       Membership        Add      NaN
+2              NaN     Update      NaN
+3     Books/Movies        Add      NaN
+4              NaN     Update      NaN
+5  User Management        Add      NaN
+6              NaN     Update      NaN
+7              NaN        NaN  Log Out
+
+Shape: (8, 3)
+
+====================
+Sheet: Add Membership
+====================
+              Chart Unnamed: 1       Unnamed: 2                 Unnamed: 3     Home                                                                                 Unnamed: 6
+0        Membership        Add   Add Membership                        NaN      NaN                            Note: If logged in as Admin - home will take to Admin Home Page
+1               NaN     Update       First Name                   Text Box      NaN                                   If logged in as user - home will take to  User Home Page
+2      Books/Movies        Add        Last Name                   Text Box      NaN                                                                                        NaN
+3               NaN     Update     Contact Name                   Text Box      NaN                                                                                        NaN
+4   User Management        Add  Contact Address                   Text Box      NaN                                                                                        NaN
+5               NaN     Update  Adadhar Card No                   Text Box      NaN                                                                                        NaN
+6               NaN        NaN       Start Date                   Calendar      NaN                                                                                        NaN
+7               NaN        NaN         End Date                   Calendar      NaN                                                                                        NaN
+8               NaN        NaN      Membership   Radio Button - six months      NaN  Only one radio button to be selected for membership - six months or one year or two years
+9               NaN        NaN              NaN   Radio Button - One  Year      NaN                                                                        All fields required
+10              NaN        NaN              NaN    Radio Button -Two Years      NaN                                                                                        NaN
+12              NaN        NaN              NaN                        NaN  Log Out                                                                                        NaN
+
+Shape: (12, 6)
+
+====================
+Sheet: Update Membership
+====================
+                                                              Chart Unnamed: 1          Unnamed: 2                 Unnamed: 3     Home                                                   Unnamed: 6
+0                                                        Membership        Add   Update Membership                        NaN      NaN                                                          NaN
+1                                                               NaN     Update  Membership  Number                   Text Box      NaN                                                          NaN
+2                                                      Books/Movies        Add          Start Date                   Calendar      NaN                                                          NaN
+3                                                               NaN     Update            End Date                   Calendar      NaN                                                          NaN
+4                                                   User Management        Add    Membership Extn:  Radio Button - six months      NaN                                                          NaN
+5                                                               NaN     Update                 NaN   Radio Button - One  Year      NaN  only one Radio button to be selected. Either movie or book.
+6                                                               NaN        NaN                 NaN    Radio Button -Two Years      NaN                                          All fields required
+7                                                               NaN        NaN   Membership Remove               Radio Button      NaN                                                          NaN
+10                                                              NaN        NaN                 NaN                        NaN  Log Out                                                          NaN
+12  Note: If logged in as Admin - home will take to Admin Home Page        NaN                 NaN                        NaN      NaN                                                          NaN
+13         If logged in as user - home will take to  User Home Page        NaN                 NaN                        NaN      NaN                                                          NaN
+
+Shape: (11, 6)
+
+====================
+Sheet: Add Book
+====================
+                                                              Chart Unnamed: 1           Unnamed: 2                       Home                               Unnamed: 5
+0                                                        Membership        Add       Add Book/Movie                        NaN                                      NaN
+1                                                               NaN     Update  Radio Button - Book       Radio Button - Movie  All fields required to submit the form.
+2                                                      Books/Movies        Add      Book/Movie Name                   Text Box                                      NaN
+3                                                               NaN     Update  Date of Procurement                   Calendar                                      NaN
+4                                                   User Management        Add      Quantity/Copies  Text Box( by default - 1)                                      NaN
+5                                                               NaN     Update                  NaN                        NaN                                      NaN
+7                                                               NaN        NaN                  NaN                    Log Out                                      NaN
+12  Note: If logged in as Admin - home will take to Admin Home Page        NaN                  NaN                        NaN                                      NaN
+13         If logged in as user - home will take to  User Home Page        NaN                  NaN                        NaN                                      NaN
+
+Shape: (9, 5)
+
+====================
+Sheet: Update Book
+====================
+                                                              Chart    Home           Unnamed: 2            Unnamed: 3   Home.1                               Unnamed: 6
+0                                                        Membership     Add    Update Book/Movie                   NaN      NaN                                      NaN
+1                                                               NaN  Update  Radio Button - Book  Radio Button - Movie      NaN  All fields required to submit the form.
+2                                                      Books/Movies     Add      Book/Movie Name    Text Box/Drop Down      NaN                                      NaN
+3                                                               NaN  Update            Serial No             Text Box       NaN                                      NaN
+4                                                    UserManagement     Add               Status            Drop Down       NaN                                      NaN
+5                                                               NaN  Update                Date               Calendar      NaN                                      NaN
+7                                                               NaN     NaN                  NaN                   NaN  Log Out                                      NaN
+11  Note: If logged in as Admin - home will take to Admin Home Page     NaN                  NaN                   NaN      NaN                                      NaN
+12         If logged in as user - home will take to  User Home Page     NaN                  NaN                   NaN      NaN                                      NaN
+
+Shape: (9, 6)
+
+====================
+Sheet: User Management
+====================
+                                                              Chart Unnamed: 1               Unnamed: 2                          Home                                                        Unnamed: 5
+0                                                        Membership        Add          User Management                           NaN                                                               NaN
+1                                                               NaN     Update  New User - Radio Button  Existing User - Radio Button                           All fields required to submit the form.
+2                                                      Books/Movies        Add                  Name -                       Text Box  unselection of the checkbox implies - inactive and not an admin.
+3                                                               NaN     Update                  Status             Checkbox - Active                                                                NaN
+4                                                   User Management        Add                    Admin              Checkbox - Admin                                                               NaN
+5                                                               NaN     Update                      NaN                           NaN                                                               NaN
+7                                                               NaN        NaN                      NaN                       Log Out                                                               NaN
+12  Note: If logged in as Admin - home will take to Admin Home Page        NaN                      NaN                           NaN                                                               NaN
+13         If logged in as user - home will take to  User Home Page        NaN                      NaN                           NaN                                                               NaN
+
+Shape: (9, 5)
+
+====================
+Sheet: Cancel
+====================
+                    Chart                                                       Unnamed: 1     Home
+3   Transaction cancelled                                                              NaN      NaN
+7                     NaN                                                              NaN  Log Out
+11                    NaN  Note: If logged in as Admin - home will take to Admin Home Page      NaN
+12                    NaN         If logged in as user - home will take to  User Home Page      NaN
+
+Shape: (4, 3)
+
+====================
+Sheet: Confirmation
+====================
+                                                              Chart     Home
+3                              Transaction completeld successfully.      NaN
+7                                                               NaN  Log Out
+11  Note: If logged in as Admin - home will take to Admin Home Page      NaN
+12         If logged in as user - home will take to  User Home Page      NaN
+
+Shape: (4, 2)
+
+====================
+Sheet: Sheet1
+====================
+   Farmer Demo Form                                                                                    Unnamed: 2    Unnamed: 3
+1            1 Page                                                                  Login from User and Password           NaN
+2            2 Page                                                                       Add Farmers Information  Non Editable
+3               NaN                                                                                          Name           NaN
+4               NaN                                                                                 Father's Name           NaN
+5               NaN                                                                                    Mobile No.           NaN
+6               NaN                                                                                      Email ID           NaN
+7               NaN                                                                                   Street name           NaN
+8               NaN                                                                                          City           NaN
+9               NaN                                                                                          City           NaN
+10              NaN                                                                                Country/region           NaN
+11              NaN                                                                                          Site           NaN
+12              NaN                                                                              Anniversary Date           NaN
+13              NaN                                                                                    Birth date           NaN
+14              NaN                                                                     Total Farming Land Area             NaN
+16         3nd page                                                                                   Demo Detail           NaN
+17              NaN                                                                                demo crop name        select
+18              NaN                                                                               CropDescription        select
+19              NaN                                                                                    Crop Stage           NaN
+20              NaN                                                                                       Purpose        select
+21              NaN                                                                            PurposeDescription           NaN
+22              NaN                                                                                    Product Id        select
+23              NaN                                                                                  Product Name        select
+24              NaN                                                                                         brand        select
+25              NaN                                                                                   Description           NaN
+26              NaN                                                                                     Area Unit           NaN
+27              NaN                                                                                     Issue Qty           NaN
+28              NaN                                                                                   Dosage Unit           NaN
+29              NaN                                                                                   Item number        select
+30              NaN                                                                                     Item name        select
+31              NaN                                                                                  Item Unit Id           NaN
+32              NaN                                                                                 Item Used Qty           NaN
+33              NaN                                                                              Remark By Farmer           NaN
+34              NaN                                                                           Remarks By Employee           NaN
+35              NaN                                                                                                         NaN
+36           4 page                                                                                      Pictures  Non Editable
+37              NaN                                                  Upload the pictures of products farmer field           NaN
+39           6 page                                                                                       Status            NaN
+40              NaN                                                                  Update the status of Indent            NaN
+41              NaN                                                           farmer detail updated in Ax or not.           NaN
+42              NaN                                                                         Remaning Stock Detail           NaN
+44           9 page                                                                                Travel Report            NaN
+45              NaN                                                        all users can see there travel report            NaN
+46              NaN                                                                                 Farmer visit            NaN
+47              NaN                                                                   all distance travel by them           NaN
+48              NaN                                                                    place name on hourly bases           NaN
+50             Note                                                                                           NaN           NaN
+51                1                                                         User login can configure from backend           NaN
+52                2                                                   Farmer update will be run  1 times in a day           NaN
+53                3                                       Picutre update should be run daily  bases with compress           NaN
+54                5  after visit on Farmer site user will metion Reason status may me collection or other perpose           NaN
+55                7                             daily Travel Mail detail should be go to reporting senior and SP.           NaN
+56                8                                 T.A D.A deprt. Can access the travel report from the backend.           NaN
+
+Shape: (52, 3)
+
+====================
+Sheet: Log Out
+====================
+                               Chart
+3  You have successfully logged out.
+
+Shape: (1, 1)
