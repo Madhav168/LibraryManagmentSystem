@@ -421,34 +421,91 @@ export default function TransactionSystem() {
                   </div>
                   <div>
                     <CardTitle className="text-2xl font-black uppercase tracking-tight">Book Issue</CardTitle>
-                    <CardDescription className="text-[#191716]/60 font-bold uppercase tracking-widest text-[10px]">Processing resource allocation</CardDescription>
+                    <CardDescription className="text-[#191716]/60 font-bold uppercase tracking-widest text-[10px]">Asset allocation sequence</CardDescription>
                   </div>
                 </div>
               </div>
               <CardContent className="p-10">
-                <form onSubmit={handleIssue} className="space-y-8">
+                <form onSubmit={handleIssue} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                      <Label className="font-black uppercase tracking-widest text-[10px]">Recipient</Label>
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Book Name</Label>
+                      <CustomCombobox
+                        items={suggestions.titles.map(t => ({ value: t, label: t }))}
+                        value={selectedAsset?.title || ''}
+                        placeholder="Drop Down"
+                        onSelect={async (val) => {
+                          const res = await fetch(`/api/transactions/search?title=${encodeURIComponent(val)}`);
+                          if (res.ok) {
+                            const matches = await res.json();
+                            if (matches.length > 0) setSelectedAsset(matches[0]);
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Author</Label>
+                      <Input 
+                        className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40"
+                        value={selectedAsset?.author || ''}
+                        readOnly
+                        placeholder="Text box"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Issue Date</Label>
+                      <Input 
+                        type="text"
+                        className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40"
+                        value={new Date().toLocaleDateString()}
+                        readOnly
+                        placeholder="Calendar"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Return Date</Label>
+                      <Input 
+                        type="text"
+                        className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40"
+                        value={new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                        readOnly
+                        placeholder="Calendar"
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Remarks (Non Mandatory)</Label>
+                      <textarea 
+                        className="w-full min-h-[120px] p-6 bg-[#191716]/5 border-2 border-[#191716]/5 rounded-3xl font-bold uppercase tracking-tight text-sm focus:outline-none focus:border-[#e6af2e]/50 transition-colors"
+                        value={remarks}
+                        onChange={(e) => setRemarks(e.target.value)}
+                        placeholder="Text area/Text"
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Member Selection</Label>
                       <CustomCombobox
                         items={members.map(m => ({ value: m._id, label: `${m.firstName} ${m.lastName}`, subLabel: m.aadhar }))}
                         value={selectedMember}
-                        placeholder="Select Member..."
+                        placeholder="Select Recipient..."
                         onSelect={(val) => setSelectedMember(val)}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="font-black uppercase tracking-widest text-[10px]">Asset</Label>
-                      <Input 
-                        className="h-12 border-2 rounded-xl px-4 font-bold"
-                        value={selectedAsset?.title || ''}
-                        readOnly
-                      />
-                    </div>
                   </div>
-                  <div className="flex gap-4">
-                    <Button type="submit" className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl">Confirm Issue</Button>
-                    <Button type="button" onClick={() => setActiveTab('search')} variant="outline" className="h-16 px-10 rounded-2xl font-black uppercase tracking-widest">Back</Button>
+                  <div className="flex gap-4 pt-10">
+                    <Button 
+                      onClick={() => { resetState(); setActiveTab('menu'); }}
+                      variant="outline" 
+                      className="flex-1 h-16 border-2 border-[#191716]/10 rounded-2xl font-black uppercase tracking-widest"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      disabled={isLoading || !selectedAsset || !selectedMember}
+                      className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl shadow-xl hover:scale-[1.02] transition-transform"
+                    >
+                      {isLoading ? 'Processing...' : 'Confirm'}
+                    </Button>
                   </div>
                 </form>
               </CardContent>
@@ -462,43 +519,96 @@ export default function TransactionSystem() {
                   </div>
                   <div>
                     <CardTitle className="text-2xl font-black uppercase tracking-tight">Return Book</CardTitle>
-                    <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Reclamation protocols</CardDescription>
+                    <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Resource reclamation protocol</CardDescription>
                   </div>
                 </div>
               </div>
               <CardContent className="p-10">
-                <div className="space-y-10">
-                   <div className="space-y-4">
-                    <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60 ml-1">Asset Serial Number</Label>
-                    <CustomCombobox
-                      items={activeTransactions.map(t => ({
-                        value: t.assetId?._id || t._id,
-                        label: `${t.assetId?.serialNo} - ${t.assetId?.title}`,
-                        subLabel: t.memberId?.firstName
-                      }))}
-                      value={selectedTransaction?.assetId?._id || ''}
-                      placeholder="SELECT SN..."
-                      onSelect={(val) => {
-                        const tx = activeTransactions.find(t => (t.assetId?._id || t._id) === val);
-                        if (tx) setSelectedTransaction(tx);
-                      }}
-                    />
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                       <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Book Name</Label>
+                       <CustomCombobox
+                         items={activeTransactions.map(t => ({ 
+                           value: t.assetId?._id || t._id, 
+                           label: t.assetId?.title,
+                           subLabel: t.memberId?.firstName 
+                         }))}
+                         value={selectedTransaction?.assetId?._id || ''}
+                         placeholder="Drop Down"
+                         onSelect={(val) => {
+                           const tx = activeTransactions.find(t => (t.assetId?._id || t._id) === val);
+                           if (tx) setSelectedTransaction(tx);
+                         }}
+                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Author</Label>
+                      <textarea 
+                        className="w-full h-12 p-3 bg-white/50 border-2 border-[#191716]/5 rounded-xl font-bold text-[#191716]/40 text-sm focus:outline-none"
+                        value={selectedTransaction?.assetId?.author || ''}
+                        readOnly
+                        placeholder="Text Area"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Serial No (Mandatory)</Label>
+                      <CustomCombobox
+                        items={activeTransactions.map(t => ({ value: t.assetId?.serialNo, label: t.assetId?.serialNo }))}
+                        value={selectedTransaction?.assetId?.serialNo || ''}
+                        placeholder="Drop Down"
+                        onSelect={(val) => {
+                          const tx = activeTransactions.find(t => t.assetId?.serialNo === val);
+                          if (tx) setSelectedTransaction(tx);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Issue Date</Label>
+                      <Input 
+                        type="text"
+                        className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40"
+                        value={selectedTransaction ? new Date(selectedTransaction.issueDate).toLocaleDateString() : ''}
+                        readOnly
+                        placeholder="Text Box"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Return Date</Label>
+                      <Input 
+                        type="date"
+                        className="h-12 border-2 bg-white/10 border-[#191716]/5 rounded-xl px-4 font-black"
+                        defaultValue={new Date().toISOString().split('T')[0]}
+                        placeholder="Calendar"
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Remarks (Non Mandatory)</Label>
+                      <textarea 
+                        className="w-full min-h-[100px] p-6 bg-[#191716]/5 border-2 border-[#191716]/5 rounded-3xl font-bold text-sm focus:outline-none"
+                        placeholder="Text Box/area"
+                      />
+                    </div>
                   </div>
+
                   {selectedTransaction && (
-                    <div className="space-y-8 animate-in slide-in-from-top-6">
-                       <div className="flex items-center gap-4 p-8 bg-[#e6af2e]/5 rounded-3xl border-2 border-dashed border-[#e6af2e]/30">
+                    <div className="pt-6 border-t border-[#191716]/5">
+                       <div className="flex items-center gap-4 p-8 bg-[#e6af2e]/5 rounded-3xl border-2 border-dashed border-[#e6af2e]/30 mb-8">
                         <Checkbox 
-                          id="fine-paid-side" 
+                          id="fine-paid-final" 
                           checked={finePaid} 
                           onCheckedChange={(val) => setFinePaid(val as boolean)}
-                          className="h-8 w-8 rounded-xl border-2 border-[#e6af2e] data-[state=checked]:bg-[#e6af2e] data-[state=checked]:text-[#191716]"
+                          className="h-8 w-8 rounded-xl border-2 border-[#e6af2e] data-[state=checked]:bg-[#e6af2e]"
                         />
                         <div className="flex-1">
-                          <Label htmlFor="fine-paid-side" className="text-lg font-black uppercase tracking-tight text-[#191716] block mb-1">Financial Settlement</Label>
-                          <p className="text-xs font-bold text-[#191716]/50">Verify all dues are cleared</p>
+                          <Label htmlFor="fine-paid-final" className="text-lg font-black uppercase text-[#191716]">Settlement Clear</Label>
+                          <p className="text-xs font-bold text-[#191716]/50">Verify fine of ₹{Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10} is paid</p>
                         </div>
                       </div>
-                      <Button onClick={handleReturn} className="w-full h-16 bg-[#191716] text-[#e6af2e] rounded-2xl font-black uppercase tracking-widest">Confirm Return</Button>
+                      <div className="flex gap-4">
+                        <Button onClick={() => { resetState(); setActiveTab('menu'); }} variant="outline" className="flex-1 h-16 border-2 border-[#191716]/10 rounded-2xl font-black uppercase tracking-widest">Cancel</Button>
+                        <Button onClick={handleReturn} disabled={isLoading} className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl shadow-xl">Confirm</Button>
+                      </div>
                     </div>
                   )}
                 </div>
