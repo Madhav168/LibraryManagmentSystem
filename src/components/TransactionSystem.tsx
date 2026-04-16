@@ -243,7 +243,11 @@ export default function TransactionSystem() {
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => { resetState(); setActiveTab(item.id as Tab); }}
+              onClick={() => { 
+                resetState(); 
+                if (item.id === 'pay') setActiveTab('return');
+                else setActiveTab(item.id as Tab); 
+              }}
               className={`w-full text-left p-6 rounded-2xl flex items-center justify-between transition-all duration-300 border-2 ${
                 activeTab === item.id || (activeTab === 'results' && item.id === 'search')
                   ? 'bg-[#191716] border-[#191716] text-[#e6af2e] shadow-xl translate-x-2' 
@@ -648,7 +652,12 @@ export default function TransactionSystem() {
                     </div>
                     <div className="space-y-2">
                       <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Fine Calculated</Label>
-                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction?.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10} readOnly placeholder="by default zero" />
+                      <Input 
+                        className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" 
+                        value={selectedTransaction?.dueDate ? (Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10).toString() : "0"} 
+                        readOnly 
+                        placeholder="by default zero" 
+                      />
                     </div>
                     <div className="flex items-center gap-4 pt-6">
                       <Checkbox 
