@@ -576,9 +576,10 @@ export default function TransactionSystem() {
                     <div className="space-y-2">
                       <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Return Date</Label>
                       <Input 
-                        type="date"
-                        className="h-12 border-2 bg-white/10 border-[#191716]/5 rounded-xl px-4 font-black"
-                        defaultValue={new Date().toISOString().split('T')[0]}
+                        type="text"
+                        className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40"
+                        value={selectedTransaction ? new Date(selectedTransaction.dueDate).toLocaleDateString() : ''}
+                        readOnly
                         placeholder="Calendar"
                       />
                     </div>
@@ -587,53 +588,90 @@ export default function TransactionSystem() {
                       <textarea 
                         className="w-full min-h-[100px] p-6 bg-[#191716]/5 border-2 border-[#191716]/5 rounded-3xl font-bold text-sm focus:outline-none"
                         placeholder="Text Box/area"
+                        value={remarks}
+                        onChange={(e) => setRemarks(e.target.value)}
                       />
                     </div>
                   </div>
-
-                  {selectedTransaction && (
-                    <div className="pt-6 border-t border-[#191716]/5">
-                       <div className="flex items-center gap-4 p-8 bg-[#e6af2e]/5 rounded-3xl border-2 border-dashed border-[#e6af2e]/30 mb-8">
-                        <Checkbox 
-                          id="fine-paid-final" 
-                          checked={finePaid} 
-                          onCheckedChange={(val) => setFinePaid(val as boolean)}
-                          className="h-8 w-8 rounded-xl border-2 border-[#e6af2e] data-[state=checked]:bg-[#e6af2e]"
-                        />
-                        <div className="flex-1">
-                          <Label htmlFor="fine-paid-final" className="text-lg font-black uppercase text-[#191716]">Settlement Clear</Label>
-                          <p className="text-xs font-bold text-[#191716]/50">Verify fine of ₹{Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10} is paid</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-4">
-                        <Button onClick={() => { resetState(); setActiveTab('menu'); }} variant="outline" className="flex-1 h-16 border-2 border-[#191716]/10 rounded-2xl font-black uppercase tracking-widest">Cancel</Button>
-                        <Button onClick={handleReturn} disabled={isLoading} className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl shadow-xl">Confirm</Button>
-                      </div>
-                    </div>
-                  )}
+                  <div className="flex gap-4 pt-10 border-t border-[#191716]/5">
+                    <Button onClick={() => { resetState(); setActiveTab('menu'); }} variant="outline" className="flex-1 h-16 border-2 border-[#191716]/10 rounded-2xl font-black uppercase tracking-widest">Cancel</Button>
+                    <Button 
+                      disabled={!selectedTransaction}
+                      onClick={() => setActiveTab('pay')} 
+                      className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl shadow-xl"
+                    >
+                      Confirm
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ) : activeTab === 'pay' ? (
             <Card className="border-none shadow-2xl overflow-hidden bg-white pt-0">
-               <div className="bg-[#e6af2e] text-[#191716] p-10">
+               <div className="bg-[#191716] text-[#e0e2db] p-10">
                 <div className="flex items-center gap-4">
-                  <div className="bg-[#191716] p-3 rounded-xl">
-                    <DollarSign className="h-6 w-6 text-[#e6af2e]" />
+                  <div className="bg-[#e6af2e] p-3 rounded-xl">
+                    <DollarSign className="h-6 w-6 text-[#191716]" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Financial Dues</CardTitle>
-                    <CardDescription className="text-[#191716]/60 font-bold uppercase tracking-widest text-[10px]">Processing late fees</CardDescription>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Pay Fine</CardTitle>
+                    <CardDescription className="text-[#e0e2db]/60 font-bold uppercase tracking-widest text-[10px]">Financial settlement sequence</CardDescription>
                   </div>
                 </div>
               </div>
-              <CardContent className="p-10 text-center space-y-6">
-                 <div className="bg-[#191716]/5 p-20 rounded-[32px] border-2 border-dashed border-[#191716]/10">
-                    <p className="text-xs font-black uppercase tracking-[0.3em] text-[#191716]/30 mb-4">Module Integration</p>
-                    <h4 className="text-xl font-black text-[#191716] uppercase mb-4">Payment Integrated with Return</h4>
-                    <p className="max-w-md mx-auto text-xs font-bold leading-relaxed text-[#191716]/60">For the most efficient workflow, fine payments are now processed directly within the Book Return sequence.</p>
-                    <Button onClick={() => setActiveTab('return')} className="mt-8 bg-[#191716] text-[#e6af2e] px-10 h-14 rounded-2xl font-black uppercase tracking-widest">Go to Return</Button>
-                 </div>
+              <CardContent className="p-10">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Book Name</Label>
+                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={selectedTransaction?.assetId?.title || ''} readOnly placeholder="Text Box" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Enter Author</Label>
+                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={selectedTransaction?.assetId?.author || ''} readOnly placeholder="Text Box" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Serial No</Label>
+                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={selectedTransaction?.assetId?.serialNo || ''} readOnly placeholder="Text Box" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Issue Date</Label>
+                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={selectedTransaction ? new Date(selectedTransaction.issueDate).toLocaleDateString() : ''} readOnly placeholder="Calendar" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Return Date</Label>
+                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={selectedTransaction ? new Date(selectedTransaction.dueDate).toLocaleDateString() : ''} readOnly placeholder="Calendar" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Actual Return Date</Label>
+                      <Input className="h-12 border-2 bg-white/10 border-[#191716]/5 rounded-xl px-4 font-black" type="text" value={new Date().toLocaleDateString()} readOnly placeholder="Calendar" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Fine Calculated</Label>
+                      <Input className="h-12 border-2 bg-white/50 rounded-xl px-4 font-bold text-[#191716]/40" value={Math.max(0, Math.floor((Date.now() - new Date(selectedTransaction?.dueDate).getTime()) / (1000 * 60 * 60 * 24))) * 10} readOnly placeholder="by default zero" />
+                    </div>
+                    <div className="flex items-center gap-4 pt-6">
+                      <Checkbox 
+                        id="fine-paid-chk" 
+                        checked={finePaid} 
+                        onCheckedChange={(val) => setFinePaid(val as boolean)}
+                        className="h-8 w-8 rounded-xl border-2 border-[#191716] data-[state=checked]:bg-[#e6af2e]"
+                      />
+                      <div>
+                        <Label htmlFor="fine-paid-chk" className="font-black uppercase tracking-tight text-[#191716]">Fine Paid</Label>
+                        <p className="text-[10px] font-bold text-[#191716]/40">by default unchecked</p>
+                      </div>
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px] text-[#191716]/60">Remarks (Non Mandatory)</Label>
+                      <textarea className="w-full min-h-[80px] p-6 bg-[#191716]/5 border-2 border-[#191716]/5 rounded-3xl font-bold text-sm focus:outline-none" value={remarks} readOnly placeholder="text area" />
+                    </div>
+                  </div>
+                  <div className="flex gap-4 pt-10 border-t border-[#191716]/5">
+                    <Button onClick={() => router.push('/status/cancelled?type=transaction')} variant="outline" className="flex-1 h-16 border-2 border-[#191716]/10 rounded-2xl font-black uppercase tracking-widest">Cancel</Button>
+                    <Button onClick={handleReturn} disabled={isLoading} className="flex-1 h-16 bg-[#191716] text-[#e6af2e] font-black uppercase tracking-widest rounded-2xl shadow-xl">Confirm</Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ) : null}
